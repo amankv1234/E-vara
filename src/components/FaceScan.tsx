@@ -114,29 +114,27 @@ const FaceScan = ({ onComplete, existingImage }: FaceScanProps) => {
     }
   }, [onComplete]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (countdown === null || !videoReady) return;
 
     if (countdown === 0) {
-      // Small timeout to ensure the last video frame has rendered
-      setTimeout(() => {
-        const data = captureFrame();
-        if (data) {
-          setCaptured(data);
-          onComplete(data);
-        }
-        stopStream();
-        setScanning(false);
-        setCountdown(null);
-        setVideoReady(false);
-      }, 100);
+      // Capture IMMEDIATELY before stopping the stream
+      const data = captureFrame();
+      stopStream();
+      setScanning(false);
+      setCountdown(null);
+      setVideoReady(false);
+      
+      if (data) {
+        setCaptured(data);
+        onComplete(data);
+      }
       return;
     }
 
     const timer = setTimeout(() => setCountdown((c) => (c !== null ? c - 1 : null)), 1000);
     return () => clearTimeout(timer);
   }, [countdown, videoReady, captureFrame, onComplete, stopStream]);
-
   // Cleanup on unmount
   useEffect(() => () => stopStream(), [stopStream]);
 
