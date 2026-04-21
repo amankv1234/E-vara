@@ -7,6 +7,7 @@ import IdentityForm from "@/components/IdentityForm";
 import MonitoringFeed, { type AlertItem } from "@/components/MonitoringFeed";
 import ToolsPanel from "@/components/ToolsPanel";
 import StatsCards from "@/components/StatsCards";
+import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
 import AlertHistory from "@/pages/AlertHistory";
 
 interface DashboardProps {
@@ -115,13 +116,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
           <div className="space-y-4">
             {isSetupComplete ? (
-              <MonitoringFeed
-                fullName={identity!.fullName}
-                username={identity!.username}
-                keywords={identity!.keywords || ""}
-                onAlertsChange={handleAlertsChange}
-                onMonitoringChange={handleMonitoringChange}
-              />
+              <>
+                <MonitoringFeed
+                  fullName={identity!.fullName}
+                  username={identity!.username}
+                  keywords={identity!.keywords || ""}
+                  onAlertsChange={handleAlertsChange}
+                  onMonitoringChange={handleMonitoringChange}
+                />
+                <SearchResultsIntelligence
+                  fullName={identity!.fullName}
+                  username={identity!.username}
+                />
+              </>
             ) : (
               <div className="rounded-lg border border-border bg-card p-8 sm:p-12 text-center">
                 <Shield className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />

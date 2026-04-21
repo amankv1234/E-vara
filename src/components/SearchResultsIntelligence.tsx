@@ -44,8 +44,9 @@ export const SearchResultsIntelligence = ({
 
       const result = analyzeSearchResults(mockResults, fullName, username, 10);
       setAnalysisResult(result);
-    } catch (err: any) {
-      setError(err.message || "Search failed. Please try again.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Search failed. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -196,6 +197,8 @@ async function fetchSearchResults(
   username: string,
   engine: "google" | "bing"
 ): Promise<SearchResult[]> {
+  void engine;
+
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1500));
 
