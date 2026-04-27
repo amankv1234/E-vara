@@ -7,6 +7,7 @@ import IdentityForm from "@/components/IdentityForm";
 import MonitoringFeed, { type AlertItem } from "@/components/MonitoringFeed";
 import ToolsPanel from "@/components/ToolsPanel";
 import StatsCards from "@/components/StatsCards";
+import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
 import AlertHistory from "@/pages/AlertHistory";
 
 interface DashboardProps {
@@ -62,8 +63,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-sm">
+    <div className="neon-ambient min-h-screen bg-background">
+      <header className="sticky top-0 z-10 border-b border-border bg-card/70 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2 min-w-0">
             <Shield className="h-5 w-5 shrink-0 text-primary" />
@@ -72,14 +73,14 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={toggleTheme}
-              className="inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+              className="neon-button inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
               aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
             </button>
             <button
               onClick={() => setShowHistory(true)}
-              className="inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+              className="neon-button inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
             >
               <History className="h-3 w-3" />
               <span className="hidden sm:inline">History</span>
@@ -87,7 +88,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <span className="text-xs font-mono text-muted-foreground hidden lg:inline">{user?.email}</span>
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+              className="neon-button inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
             >
               <LogOut className="h-3 w-3" />
               <span className="hidden sm:inline">Logout</span>
@@ -115,13 +116,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
           <div className="space-y-4">
             {isSetupComplete ? (
-              <MonitoringFeed
-                fullName={identity!.fullName}
-                username={identity!.username}
-                keywords={identity!.keywords || ""}
-                onAlertsChange={handleAlertsChange}
-                onMonitoringChange={handleMonitoringChange}
-              />
+              <>
+                <MonitoringFeed
+                  fullName={identity!.fullName}
+                  username={identity!.username}
+                  keywords={identity!.keywords || ""}
+                  onAlertsChange={handleAlertsChange}
+                  onMonitoringChange={handleMonitoringChange}
+                />
+                <SearchResultsIntelligence
+                  fullName={identity!.fullName}
+                  username={identity!.username}
+                />
+              </>
             ) : (
               <div className="rounded-lg border border-border bg-card p-8 sm:p-12 text-center">
                 <Shield className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />

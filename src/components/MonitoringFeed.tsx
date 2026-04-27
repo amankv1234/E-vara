@@ -99,8 +99,10 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
     };
   }, []);
 
+  const wrapperClassName = "neon-panel lift-3d rounded-lg border border-border bg-card p-4 sm:p-6";
+
   return (
-    <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
+    <div className={wrapperClassName}>
       <div className="mb-4 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <Activity className="h-4 w-4 shrink-0 text-primary" />

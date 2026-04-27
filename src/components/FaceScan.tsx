@@ -217,6 +217,20 @@ const FaceScan = ({ onComplete, existingImage }: FaceScanProps) => {
         </button>
       )}
 
+
+      <div className="mt-4 rounded-md border border-[hsl(48,96%,53%/0.3)] bg-[hsl(48,96%,53%/0.1)] px-3 py-2.5">
+        <div className="flex gap-2">
+          <span className="shrink-0 text-lg">⚠️</span>
+          <div>
+            <p className="text-xs font-semibold text-[#d97706]">Face Verification Disclaimer</p>
+            <p className="mt-1 text-xs leading-relaxed text-[#b45309]">
+              Face verification is currently experimental. Real-world confidence ranges between 40–50%
+              depending on lighting, angle, and input quality.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <canvas ref={canvasRef} className="hidden" />
     </div>
   );
