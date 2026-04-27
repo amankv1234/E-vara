@@ -112,6 +112,10 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    background-image:
+      radial-gradient(circle at 15% 10%, hsl(199 95% 60% / 0.15), transparent 30%),
+      radial-gradient(circle at 85% 85%, hsl(280 85% 60% / 0.12), transparent 30%),
+      linear-gradient(180deg, hsl(var(--background)), hsl(var(--background)));
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-mono;

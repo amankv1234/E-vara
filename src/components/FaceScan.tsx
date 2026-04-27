@@ -211,7 +211,7 @@ const FaceScan = ({ onComplete, existingImage }: FaceScanProps) => {
       ) : (
         <button
           onClick={startScan}
-          className="w-full rounded-md border border-border bg-secondary px-4 py-8 text-sm font-mono text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="w-full rounded-md border border-border bg-secondary px-4 py-8 text-sm font-mono text-muted-foreground shadow-[inset_0_0_24px_hsl(199_89%_55%_/_0.08)] hover:border-primary hover:text-primary hover:shadow-[0_0_22px_hsl(199_89%_55%_/_0.26)] transition-colors"
         >
           Start Face Scan
         </button>
