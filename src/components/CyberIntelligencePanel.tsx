@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   AlertTriangle,
   Bot,
@@ -157,45 +157,34 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
     { role: "assistant", text: "Ask E-Vara about exposure patterns or mitigation guidance." },
   ]);
   const [typing, setTyping] = useState(false);
-  const timeoutIds = useRef<number[]>([]);
 
-  const identityRiskScore = useMemo(() => {
+  const riskScore = useMemo(() => {
     const base = 35;
     const alertFactor = Math.min(alertCount * 3, 30);
     const monitorFactor = monitoringActive ? 12 : 0;
     return Math.min(base + alertFactor + monitorFactor + 14, 100);
   }, [alertCount, monitoringActive]);
 
-  const threatLabel = identityRiskScore >= 75 ? "DEFCON 2" : identityRiskScore >= 55 ? "DEFCON 3" : "DEFCON 4";
+  const threatLabel = riskScore >= 75 ? "DEFCON 2" : riskScore >= 55 ? "DEFCON 3" : "DEFCON 4";
 
   const runSimulation = () => {
     setSimulating(true);
     setSimulationStep(0);
     ATTACK_STEPS.forEach((_, idx) => {
-      const timer = window.setTimeout(() => setSimulationStep(idx + 1), idx * 900 + 350);
-      timeoutIds.current.push(timer);
+      setTimeout(() => setSimulationStep(idx + 1), idx * 900 + 350);
     });
-    const timer = window.setTimeout(() => setSimulating(false), ATTACK_STEPS.length * 900 + 500);
-    timeoutIds.current.push(timer);
+    setTimeout(() => setSimulating(false), ATTACK_STEPS.length * 900 + 500);
   };
 
   const askQuestion = (type: "exposure" | "reduce") => {
     const question = type === "exposure" ? "Where am I most exposed?" : "How can I reduce my risk?";
     setChatMessages((prev) => [...prev, { role: "user", text: question }]);
     setTyping(true);
-    const timer = window.setTimeout(() => {
+    setTimeout(() => {
       setTyping(false);
       setChatMessages((prev) => [...prev, { role: "assistant", text: CHAT_RESPONSES[type] }]);
     }, 950);
-    timeoutIds.current.push(timer);
   };
-
-  useEffect(() => {
-    return () => {
-      timeoutIds.current.forEach((id) => window.clearTimeout(id));
-      timeoutIds.current = [];
-    };
-  }, []);
 
   return (
     <section className="space-y-4">
@@ -218,7 +207,7 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
           <CircleMetric label="Anomaly Index" value={58} tone="medium" />
           <div className="glass-panel interactive-panel flex flex-col justify-center p-3">
             <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">E-Vara Risk Score</p>
-            <p className="text-3xl font-bold text-[hsl(var(--severity-high))]">{identityRiskScore}/100</p>
+            <p className="text-3xl font-bold text-[hsl(var(--severity-high))]">{riskScore}/100</p>
             <p className="text-xs text-muted-foreground">Primary vulnerability: reused email and profile correlation.</p>
           </div>
         </div>
@@ -311,8 +300,8 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
               <Zap className="h-4 w-4 text-primary" />
               <h4 className="text-sm font-semibold uppercase tracking-wider">Attack Simulation Mode</h4>
             </div>
-            <button onClick={runSimulation} disabled={simulating} className="neon-button rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60">
-              {simulating ? "Simulating..." : "Simulate Attack"}
+            <button onClick={runSimulation} className="neon-button rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+              Simulate Attack
             </button>
           </div>
           <div className="space-y-2">

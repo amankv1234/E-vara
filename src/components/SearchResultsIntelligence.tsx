@@ -108,7 +108,7 @@ export const SearchResultsIntelligence = ({
       {/* Results */}
       {analysisResult && (
         <div className="space-y-4">
-          {/* Summary Stats */}
+          {/* Summary Stats + Risk Heatmap */}
           <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
             <div className="rounded-md border border-border bg-secondary/60 p-3 text-center">
               <div className="text-lg font-bold text-foreground">
