@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   AlertTriangle,
   Bot,
@@ -157,7 +157,6 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
     { role: "assistant", text: "Ask E-Vara about exposure patterns or mitigation guidance." },
   ]);
   const [typing, setTyping] = useState(false);
-  const timeoutIds = useRef<number[]>([]);
 
   const riskScore = useMemo(() => {
     const base = 35;
@@ -172,30 +171,20 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
     setSimulating(true);
     setSimulationStep(0);
     ATTACK_STEPS.forEach((_, idx) => {
-      const timer = window.setTimeout(() => setSimulationStep(idx + 1), idx * 900 + 350);
-      timeoutIds.current.push(timer);
+      setTimeout(() => setSimulationStep(idx + 1), idx * 900 + 350);
     });
-    const timer = window.setTimeout(() => setSimulating(false), ATTACK_STEPS.length * 900 + 500);
-    timeoutIds.current.push(timer);
+    setTimeout(() => setSimulating(false), ATTACK_STEPS.length * 900 + 500);
   };
 
   const askQuestion = (type: "exposure" | "reduce") => {
     const question = type === "exposure" ? "Where am I most exposed?" : "How can I reduce my risk?";
     setChatMessages((prev) => [...prev, { role: "user", text: question }]);
     setTyping(true);
-    const timer = window.setTimeout(() => {
+    setTimeout(() => {
       setTyping(false);
       setChatMessages((prev) => [...prev, { role: "assistant", text: CHAT_RESPONSES[type] }]);
     }, 950);
-    timeoutIds.current.push(timer);
   };
-
-  useEffect(() => {
-    return () => {
-      timeoutIds.current.forEach((id) => window.clearTimeout(id));
-      timeoutIds.current = [];
-    };
-  }, []);
 
   return (
     <section className="space-y-4">
@@ -311,8 +300,8 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
               <Zap className="h-4 w-4 text-primary" />
               <h4 className="text-sm font-semibold uppercase tracking-wider">Attack Simulation Mode</h4>
             </div>
-            <button onClick={runSimulation} disabled={simulating} className="neon-button rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60">
-              {simulating ? "Simulating..." : "Simulate Attack"}
+            <button onClick={runSimulation} className="neon-button rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+              Simulate Attack
             </button>
           </div>
           <div className="space-y-2">
