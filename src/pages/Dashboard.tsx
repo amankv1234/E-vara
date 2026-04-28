@@ -8,6 +8,7 @@ import MonitoringFeed, { type AlertItem } from "@/components/MonitoringFeed";
 import ToolsPanel from "@/components/ToolsPanel";
 import StatsCards from "@/components/StatsCards";
 import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
+import CyberIntelligencePanel from "@/components/CyberIntelligencePanel";
 import AlertHistory from "@/pages/AlertHistory";
 import CyberIntelligenceSuite from "@/components/CyberIntelligenceSuite";
 

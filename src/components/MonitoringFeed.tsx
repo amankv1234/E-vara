@@ -108,10 +108,8 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
         </div>
         <button
           onClick={toggleMonitoring}
-          className={`shrink-0 rounded-md px-3 py-1.5 text-xs font-mono font-medium transition-all ${
-            monitoring
-              ? "bg-secondary text-muted-foreground hover:text-foreground"
-              : "bg-primary text-primary-foreground shadow-[0_0_18px_hsl(199_89%_52%_/_0.35)] hover:opacity-90"
+          className={`neon-button shrink-0 rounded-md px-3 py-1.5 text-xs font-mono font-medium transition-all ${
+            monitoring ? "bg-secondary text-muted-foreground hover:text-foreground" : "bg-primary text-primary-foreground"
           }`}
         >
           {monitoring ? "Stop" : "Start"}
