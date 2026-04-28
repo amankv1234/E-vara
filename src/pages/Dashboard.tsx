@@ -8,13 +8,9 @@ import MonitoringFeed, { type AlertItem } from "@/components/MonitoringFeed";
 import ToolsPanel from "@/components/ToolsPanel";
 import StatsCards from "@/components/StatsCards";
 import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
+import CyberIntelligencePanel from "@/components/CyberIntelligencePanel";
 import AlertHistory from "@/pages/AlertHistory";
-import { ThreatLevelIndicator } from "@/components/ThreatLevelIndicator";
-import { TimelineView } from "@/components/TimelineView";
-import { DigitalFootprintMap } from "@/components/DigitalFootprintMap";
-import { AIInsightPanel } from "@/components/AIInsightPanel";
-import { AttackSimulationPanel } from "@/components/AttackSimulationPanel";
-import { AIChatAssistant } from "@/components/AIChatAssistant";
+import CyberIntelligenceSuite from "@/components/CyberIntelligenceSuite";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -69,37 +65,45 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
   const isSetupComplete = identity?.faceImage && identity?.fullName;
 
+  const riskScore = useMemo(() => {
+    const base = 28;
+    const alertPressure = Math.min(40, alerts.length * 4);
+    const scanSignal = Math.min(18, scanCount * 6);
+    const monitoringSignal = monitoringActive ? 12 : 4;
+    return Math.min(100, base + alertPressure + scanSignal + monitoringSignal);
+  }, [alerts.length, scanCount, monitoringActive]);
+
   if (showHistory) {
     return <AlertHistory alerts={alerts} onBack={() => setShowHistory(false)} />;
   }
 
   return (
     <div className="neon-bg min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-sm neon-outline">
+      <header className="sticky top-0 z-10 border-b border-border bg-card/70 backdrop-blur-md neon-outline">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
             <Shield className="h-5 w-5 shrink-0 text-primary" />
-            <h1 className="text-sm font-mono font-bold text-foreground tracking-tight truncate neon-title">E-Vara</h1>
+            <h1 className="neon-title truncate text-sm font-bold tracking-tight text-foreground">E-Vara</h1>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={toggleTheme}
-              className="neon-button inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+              className="neon-button inline-flex items-center gap-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-[10px] text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground sm:gap-1.5 sm:px-3 sm:text-xs"
               aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
             </button>
             <button
               onClick={() => setShowHistory(true)}
-              className="neon-button inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+              className="neon-button inline-flex items-center gap-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-[10px] text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground sm:gap-1.5 sm:px-3 sm:text-xs"
             >
               <History className="h-3 w-3" />
               <span className="hidden sm:inline">History</span>
             </button>
-            <span className="text-xs font-mono text-muted-foreground hidden lg:inline">{user?.email}</span>
+            <span className="hidden text-xs text-muted-foreground lg:inline">{user?.email}</span>
             <button
               onClick={handleLogout}
-              className="neon-button inline-flex items-center gap-1 sm:gap-1.5 rounded-md border border-border bg-secondary px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-mono text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+              className="neon-button inline-flex items-center gap-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-[10px] text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground sm:gap-1.5 sm:px-3 sm:text-xs"
             >
               <LogOut className="h-3 w-3" />
               <span className="hidden sm:inline">Logout</span>
@@ -108,15 +112,15 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-4 px-4 py-4 sm:space-y-6 sm:px-6 sm:py-6">
-        <ThreatLevelIndicator riskScore={riskScore} />
-
-        <StatsCards
-          alertCount={alerts.length}
-          scanCount={scanCount}
-          monitoringActive={monitoringActive}
-          monitoringStartTime={monitoringStart}
-        />
+      <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
+        <div className="mb-4 sm:mb-6">
+          <StatsCards
+            alertCount={alerts.length}
+            scanCount={scanCount}
+            monitoringActive={monitoringActive}
+            monitoringStartTime={monitoringStart}
+          />
+        </div>
 
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-[360px_1fr]">
           <div className="space-y-4 lg:sticky lg:top-[57px] lg:self-start">
@@ -128,6 +132,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           <div className="space-y-4">
             {isSetupComplete ? (
               <>
+                <CyberIntelligenceSuite
+                  fullName={identity!.fullName}
+                  username={identity!.username}
+                  alertCount={alerts.length}
+                  monitoringActive={monitoringActive}
+                />
                 <MonitoringFeed
                   fullName={identity!.fullName}
                   username={identity!.username}
@@ -135,26 +145,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                   onAlertsChange={handleAlertsChange}
                   onMonitoringChange={handleMonitoringChange}
                 />
-                <AIInsightPanel alertCount={alerts.length} monitoringActive={monitoringActive} />
-                <AttackSimulationPanel />
-                <TimelineView />
-                <DigitalFootprintMap />
-                <SearchResultsIntelligence
-                  fullName={identity!.fullName}
-                  username={identity!.username}
-                />
+                <SearchResultsIntelligence fullName={identity!.fullName} username={identity!.username} />
               </>
             ) : (
-              <div className="rounded-lg border border-border bg-card p-8 sm:p-12 text-center neon-panel neon-3d">
+              <div className="glass-panel rounded-xl p-8 text-center sm:p-12">
                 <Shield className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
-                <p className="text-xs sm:text-sm font-mono text-muted-foreground">
-                  Complete identity verification and information to activate monitoring.
+                <p className="text-xs text-muted-foreground sm:text-sm">
+                  Complete identity verification and profile metadata to activate the cyber intelligence layer.
                 </p>
               </div>
             )}
 
-            <div className="neon-card rounded-lg border border-border bg-card p-4">
-              <p className="text-xs font-body text-muted-foreground leading-relaxed text-center">
+            <div className="glass-panel rounded-xl p-4">
+              <p className="text-center text-xs leading-relaxed text-muted-foreground">
                 E-Vara is a prototype monitoring tool designed to help users identify potential identity misuse online.
                 No real web scraping occurs during this demonstration.
               </p>
@@ -162,7 +165,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           </div>
         </div>
       </main>
-      <AIChatAssistant />
+      <AskEVaraChat />
     </div>
   );
 };

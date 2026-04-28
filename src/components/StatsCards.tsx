@@ -8,44 +8,16 @@ interface StatsCardsProps {
   monitoringStartTime: Date | null;
 }
 
-const AnimatedNumber = ({ value }: { value: number }) => {
-  const [display, setDisplay] = useState(value);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setDisplay((prev) => {
-        if (prev === value) return prev;
-        return prev + Math.sign(value - prev);
-      });
-    }, 24);
-
-    return () => clearInterval(id);
-  }, [value]);
-
-  return <span>{display}</span>;
-};
-
-const Ring = ({ value, label, icon: Icon }: { value: number; label: string; icon: typeof Bell }) => {
-  const dash = `${value} ${100 - value}`;
-  return (
-    <div className="neon-panel lift-3d rounded-lg border border-border/70 bg-card/70 p-3 backdrop-blur-md">
-      <div className="mb-2 flex items-center gap-1.5">
-        <Icon className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
-      </div>
-      <div className="flex items-center gap-3">
-        <svg className="h-11 w-11 -rotate-90" viewBox="0 0 36 36">
-          <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(var(--border))" strokeWidth="3" />
-          <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeDasharray={dash} strokeLinecap="round" />
-        </svg>
-        <p className="text-xl font-bold text-foreground tabular-nums"><AnimatedNumber value={value} /></p>
-      </div>
-    </div>
-  );
+const easeValue = (target: number, current: number) => {
+  if (target === current) return current;
+  const diff = target - current;
+  return current + Math.sign(diff) * Math.max(1, Math.floor(Math.abs(diff) / 4));
 };
 
 const StatsCards = ({ alertCount, scanCount, monitoringActive, monitoringStartTime }: StatsCardsProps) => {
   const [uptime, setUptime] = useState("00:00:00");
+  const [liveAlerts, setLiveAlerts] = useState(alertCount);
+  const [liveScans, setLiveScans] = useState(scanCount);
 
   useEffect(() => {
     if (!monitoringActive || !monitoringStartTime) {
@@ -64,21 +36,42 @@ const StatsCards = ({ alertCount, scanCount, monitoringActive, monitoringStartTi
     return () => clearInterval(id);
   }, [monitoringActive, monitoringStartTime]);
 
-  const alertRisk = useMemo(() => Math.min(96, 20 + alertCount * 10), [alertCount]);
-  const scanCoverage = useMemo(() => Math.min(95, 30 + scanCount * 18), [scanCount]);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setLiveAlerts((curr) => easeValue(alertCount, curr));
+      setLiveScans((curr) => easeValue(scanCount, curr));
+    }, 75);
+    return () => clearInterval(id);
+  }, [alertCount, scanCount]);
+
+  const cards = useMemo(
+    () => [
+      { icon: Bell, label: "Total Alerts", value: String(liveAlerts), meter: Math.min(100, liveAlerts * 8) },
+      { icon: ScanFace, label: "Scans Complete", value: String(liveScans), meter: Math.min(100, liveScans * 12) },
+      { icon: Clock, label: "Uptime", value: uptime, meter: monitoringActive ? 100 : 12 },
+    ],
+    [liveAlerts, liveScans, uptime, monitoringActive],
+  );
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-      <Ring value={alertRisk} label="Alert Pressure" icon={Bell} />
-      <Ring value={scanCoverage} label="Scan Coverage" icon={ScanFace} />
-      <div className="neon-panel lift-3d rounded-lg border border-border/70 bg-card/70 p-3 backdrop-blur-md">
-        <div className="mb-2 flex items-center gap-1.5">
-          <Clock className="h-3.5 w-3.5 text-primary" />
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">System Uptime</span>
+      {cards.map((card, i) => (
+        <div
+          key={card.label}
+          className="glass-panel scanline-wrap lift-3d rounded-xl p-3.5 sm:p-4"
+          style={{ animationDelay: `${i * 90}ms`, animationFillMode: "both" }}
+        >
+          <div className="mb-2 flex items-center gap-1.5">
+            <card.icon className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{card.label}</span>
+          </div>
+          <p className="text-lg font-mono font-bold tabular-nums text-foreground sm:text-xl">{card.value}</p>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary/90">
+            <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 transition-all duration-500" style={{ width: `${card.meter}%` }} />
+          </div>
         </div>
-        <p className="text-xl font-bold tabular-nums text-foreground">{uptime}</p>
-        <p className={`mt-1 text-[11px] ${monitoringActive ? "text-primary live-pulse" : "text-muted-foreground"}`}>
-          {monitoringActive ? "Live monitoring" : "Monitoring idle"}
+        <p className={`text-sm font-semibold ${monitoringActive ? "text-primary monitor-pulse" : "text-muted-foreground"}`}>
+          {monitoringActive ? "ACTIVE" : "STANDBY"}
         </p>
       </div>
     </div>
