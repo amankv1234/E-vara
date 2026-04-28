@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Shield, LogOut, History, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
@@ -9,6 +9,12 @@ import ToolsPanel from "@/components/ToolsPanel";
 import StatsCards from "@/components/StatsCards";
 import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
 import AlertHistory from "@/pages/AlertHistory";
+import ThreatLevelIndicator from "@/components/ThreatLevelIndicator";
+import IdentityTimeline from "@/components/IdentityTimeline";
+import DigitalFootprintMap from "@/components/DigitalFootprintMap";
+import AttackSimulationPanel from "@/components/AttackSimulationPanel";
+import AIInsightPanel from "@/components/AIInsightPanel";
+import AskEVaraChat from "@/components/AskEVaraChat";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -58,6 +64,14 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
   const isSetupComplete = identity?.faceImage && identity?.fullName;
 
+  const riskScore = useMemo(() => {
+    const base = 28;
+    const alertPressure = Math.min(40, alerts.length * 4);
+    const scanSignal = Math.min(18, scanCount * 6);
+    const monitoringSignal = monitoringActive ? 12 : 4;
+    return Math.min(100, base + alertPressure + scanSignal + monitoringSignal);
+  }, [alerts.length, scanCount, monitoringActive]);
+
   if (showHistory) {
     return <AlertHistory alerts={alerts} onBack={() => setShowHistory(false)} />;
   }
@@ -69,6 +83,10 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           <div className="flex items-center gap-2 min-w-0">
             <Shield className="h-5 w-5 shrink-0 text-primary" />
             <h1 className="text-sm font-mono font-bold text-foreground tracking-tight truncate neon-title">E-Vara</h1>
+            <div className="ml-2 hidden items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-mono text-primary sm:flex">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+              System Active
+            </div>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button
@@ -97,15 +115,15 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-4 sm:py-6 sm:px-6">
-        <div className="mb-4 sm:mb-6">
-          <StatsCards
-            alertCount={alerts.length}
-            scanCount={scanCount}
-            monitoringActive={monitoringActive}
-            monitoringStartTime={monitoringStart}
-          />
-        </div>
+      <main className="mx-auto max-w-7xl space-y-4 px-4 py-4 sm:space-y-6 sm:px-6 sm:py-6">
+        <ThreatLevelIndicator score={riskScore} />
+
+        <StatsCards
+          alertCount={alerts.length}
+          scanCount={scanCount}
+          monitoringActive={monitoringActive}
+          monitoringStartTime={monitoringStart}
+        />
 
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-[360px_1fr]">
           <div className="space-y-4 lg:sticky lg:top-[57px] lg:self-start">
@@ -117,6 +135,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           <div className="space-y-4">
             {isSetupComplete ? (
               <>
+                <AIInsightPanel score={riskScore} alertCount={alerts.length} />
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <IdentityTimeline fullName={identity!.fullName} />
+                  <AttackSimulationPanel email={user?.email} />
+                </div>
+                <DigitalFootprintMap username={identity!.username} />
                 <MonitoringFeed
                   fullName={identity!.fullName}
                   username={identity!.username}
@@ -147,6 +171,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           </div>
         </div>
       </main>
+      <AskEVaraChat />
     </div>
   );
 };
