@@ -1,250 +1,52 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+const stages = [
+  "Initializing System...",
+  "Loading Security Modules...",
+  "Establishing Secure Environment...",
+  "System Ready",
+];
 
 const CyberDashboardLoader = () => {
-  const [isVisible, setIsVisible] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const [currentMessage, setCurrentMessage] = useState(0);
-
-  const messages = [
-    "Initializing Threat Analysis...",
-    "Scanning Digital Footprint...",
-    "Decrypting Security Protocols...",
-    "Analyzing Threat Intelligence...",
-    "Establishing Secure Connection...",
-  ];
+  const [stage, setStage] = useState(0);
+  const [progress, setProgress] = useState(8);
 
   useEffect(() => {
-    const messageInterval = setInterval(() => {
-      setCurrentMessage((prev) => (prev + 1) % messages.length);
-    }, 3500);
-
-    return () => clearInterval(messageInterval);
+    const id = setInterval(() => {
+      setStage((s) => Math.min(s + 1, stages.length - 1));
+      setProgress((p) => Math.min(100, p + 24));
+    }, 2200);
+    return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 90) return prev;
-        return prev + Math.random() * 15 + 5;
-      });
-    }, 800);
-
-    return () => clearInterval(progressInterval);
-  }, []);
+  const ready = useMemo(() => stage >= stages.length - 1, [stage]);
 
   return (
-    <div
-      className={`fixed inset-0 z-50 transition-opacity duration-500 ${
-        isVisible ? "opacity-100" : "pointer-events-none opacity-0"
-      }`}
-      style={{
-        background: "linear-gradient(135deg, #0a0e27 0%, #1a0f2e 50%, #0d1a3a 100%)",
-      }}
-    >
-      {/* Particle field */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              width: Math.random() * 40 + 20 + "px",
-              height: Math.random() * 40 + 20 + "px",
-              left: Math.random() * 100 + "%",
-              top: Math.random() * 100 + "%",
-              background: "radial-gradient(circle, #00d9ff 0%, transparent 70%)",
-              opacity: 0.3,
-              filter: "blur(1px)",
-              animation: `float linear infinite`,
-              animationDuration: Math.random() * 8 + 4 + "s",
-              animationDelay: Math.random() * 2 + "s",
-            }}
-          />
-        ))}
-      </div>
+    <div className="fixed inset-0 z-50 overflow-hidden bg-[#0a0f1c]">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,229,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(0,229,255,0.06)_1px,transparent_1px)] bg-[size:32px_32px]" />
+      <div className="absolute inset-0 animate-[scan_3s_linear_infinite] bg-[linear-gradient(to_bottom,transparent,rgba(0,229,255,0.18),transparent)]" />
 
-      {/* Floating nodes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              width: "8px",
-              height: "8px",
-              left: Math.random() * 100 + "%",
-              top: Math.random() * 100 + "%",
-              background: "#00d9ff",
-              boxShadow: "0 0 20px #00d9ff",
-              animation: `nodeFloat 6s ease-in-out infinite`,
-              animationDuration: Math.random() * 4 + 4 + "s",
-              animationDelay: Math.random() * 2 + "s",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Data points */}
-      <div className="absolute top-[10%] right-[5%] hidden sm:block text-xs text-gray-400 border border-cyan-500/30 bg-slate-900/60 rounded-lg p-3 backdrop-blur">
-        ▓▒░ THREAT LEVEL: NOMINAL
-      </div>
-      <div className="absolute bottom-[15%] left-[5%] hidden sm:block text-xs text-gray-400 border border-cyan-500/30 bg-slate-900/60 rounded-lg p-3 backdrop-blur">
-        ▒░ ENCRYPTION: AES-256
-      </div>
-      <div className="absolute top-[50%] right-[2%] hidden sm:block text-xs text-gray-400 border border-cyan-500/30 bg-slate-900/60 rounded-lg p-3 backdrop-blur">
-        ░ NETWORK: SECURE
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full gap-12 px-4">
-        {/* Logo section */}
-        <div className="text-center animate-fade-in">
-          <h1
-            className="text-5xl sm:text-6xl font-bold tracking-widest mb-2"
-            style={{
-              background: "linear-gradient(135deg, #00d9ff, #a78bfa, #3b82f6)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              textShadow: "0 0 30px rgba(0, 217, 255, 0.3)",
-            }}
-          >
-            E-VARA
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-400 tracking-[2px] uppercase">Cyber Intelligence Platform</p>
+      <div className="relative flex h-full flex-col items-center justify-center gap-10">
+        <div className="text-center">
+          <h1 className="animate-pulse text-5xl font-semibold tracking-[0.35em] text-cyan-300 [text-shadow:0_0_22px_rgba(0,229,255,0.8)]">E-VARA</h1>
         </div>
 
-        {/* Scanner container */}
-        <div className="relative w-44 h-44">
-          {[0, 0.4, 0.8].map((delay, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full border-2 border-cyan-500/30"
-              style={{
-                width: i === 0 ? "100%" : i === 1 ? "70%" : "40%",
-                height: i === 0 ? "100%" : i === 1 ? "70%" : "40%",
-                top: i === 0 ? 0 : i === 1 ? "15%" : "30%",
-                left: i === 0 ? 0 : i === 1 ? "15%" : "30%",
-                animation: `border-glow 2s ease-in-out infinite`,
-                animationDelay: delay + "s",
-              }}
-            />
-          ))}
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: "conic-gradient(from 0deg, rgba(0, 217, 255, 0.4), transparent)",
-              animation: `radar-sweep 2s linear infinite`,
-            }}
-          />
-          <div
-            className="absolute top-1/2 left-1/2 w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-cyan-400 to-transparent"
-            style={{
-              boxShadow: "0 0 20px #00d9ff",
-              animation: `pulse-glow 1.5s ease-in-out infinite`,
-            }}
-          />
+        <div className="relative h-44 w-44">
+          <div className="absolute inset-0 rounded-full border border-cyan-300/30" />
+          <div className="absolute inset-3 rounded-full border border-cyan-300/50" />
+          <div className="absolute inset-0 rounded-full border-t-2 border-cyan-300 animate-spin" />
+          <div className="absolute inset-[38%] rounded-full bg-cyan-300 shadow-[0_0_26px_rgba(0,229,255,0.9)]" />
         </div>
 
-        {/* Glass panel */}
-        <div
-          className="w-full max-w-md p-6 rounded-xl border backdrop-blur-md"
-          style={{
-            background: "rgba(15, 23, 42, 0.6)",
-            borderColor: "rgba(0, 217, 255, 0.15)",
-            animation: `border-glow 3s ease-in-out infinite`,
-          }}
-        >
-          {/* Loading text */}
-          <div className="text-center h-16 flex flex-col items-center justify-center mb-4">
-            <p className="text-lg text-blue-50 tracking-wider">{messages[currentMessage]}</p>
-            <p className="text-xs text-gray-400 tracking-wider mt-2">Please wait...</p>
+        <div className="w-[90%] max-w-xl rounded-xl border border-cyan-400/30 bg-slate-900/70 p-5">
+          <p className="text-center text-cyan-100">{stages[stage]}</p>
+          <div className="mt-4 h-1.5 rounded bg-slate-800">
+            <div className="h-full rounded bg-cyan-300 transition-all duration-700" style={{ width: `${progress}%`, boxShadow: "0 0 16px #00e5ff" }} />
           </div>
-
-          {/* Progress bar */}
-          <div>
-            <div className="flex justify-between text-xs text-gray-400 mb-3">
-              <span>SYSTEM INITIALIZATION</span>
-              <span>{Math.floor(progress)}%</span>
-            </div>
-            <div className="h-1 bg-cyan-500/10 rounded-full overflow-hidden border border-cyan-500/20">
-              <div
-                className="h-full rounded-full transition-all duration-300"
-                style={{
-                  width: progress + "%",
-                  background: "linear-gradient(90deg, #00d9ff, #a78bfa, #3b82f6, #00d9ff)",
-                  boxShadow: "0 0 15px #00d9ff",
-                  backgroundSize: "200% 100%",
-                  animation: `progress-fill 2s linear infinite`,
-                }}
-              />
-            </div>
-          </div>
+          {ready && <p className="mt-3 text-center text-xs uppercase tracking-[0.2em] text-cyan-200">System Ready</p>}
         </div>
       </div>
-
-      {/* System Ready overlay */}
-      <div
-        className="absolute inset-0 flex items-center justify-center bg-slate-950/95 opacity-0 pointer-events-none transition-opacity duration-500"
-        style={{
-          opacity: progress >= 100 ? 1 : 0,
-          pointerEvents: progress >= 100 ? "auto" : "none",
-        }}
-      >
-        <div className="text-center scale-50 animate-scale-in">
-          <p className="text-5xl mb-4" style={{ background: "linear-gradient(135deg, #00d9ff, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-            ✓ SYSTEM READY
-          </p>
-          <p className="text-xl text-gray-400 tracking-widest">All systems operational. Welcome to E-VARA.</p>
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) translateX(0px); }
-          50% { transform: translateY(-20px) translateX(10px); }
-        }
-
-        @keyframes pulse-glow {
-          0%, 100% { opacity: 0.3; filter: blur(1px); }
-          50% { opacity: 0.6; filter: blur(2px); }
-        }
-
-        @keyframes radar-sweep {
-          0% { transform: rotate(0deg); opacity: 0.5; }
-          100% { transform: rotate(360deg); opacity: 0; }
-        }
-
-        @keyframes border-glow {
-          0%, 100% { box-shadow: 0 0 15px rgba(0, 217, 255, 0.2); border-color: rgba(0, 217, 255, 0.3); }
-          50% { box-shadow: 0 0 30px rgba(0, 217, 255, 0.4); border-color: rgba(0, 217, 255, 0.6); }
-        }
-
-        @keyframes progress-fill {
-          0% { background-position: 0% center; }
-          100% { background-position: 200% center; }
-        }
-
-        @keyframes nodeFloat {
-          0%, 100% { transform: translate(0, 0); }
-          25% { transform: translate(10px, -10px); }
-          50% { transform: translate(0, -20px); }
-          75% { transform: translate(-10px, -10px); }
-        }
-
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(-20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes scale-in {
-          from { transform: scale(0.5); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
-        }
-
-        .animate-fade-in { animation: fade-in 0.8s ease-out; }
-        .animate-scale-in { animation: scale-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-      `}</style>
+      <style>{`@keyframes scan {0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}`}</style>
     </div>
   );
 };

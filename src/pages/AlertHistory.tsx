@@ -7,9 +7,22 @@ interface AlertHistoryProps {
 }
 
 const SEVERITY_BADGE: Record<AlertSeverity, string> = {
-  low: "text-[hsl(var(--severity-low))] bg-[hsl(var(--severity-low)/0.15)]",
-  medium: "text-[hsl(var(--severity-medium))] bg-[hsl(var(--severity-medium)/0.15)]",
-  high: "text-[hsl(var(--severity-high))] bg-[hsl(var(--severity-high)/0.15)]",
+  low: "text-yellow-300 bg-yellow-400/10",
+  medium: "text-orange-300 bg-orange-400/10",
+  high: "text-red-300 bg-red-500/10",
+};
+
+
+const ACTIONS: Record<AlertSeverity, string> = {
+  low: "Review account activity and rotate weak passwords.",
+  medium: "Enable additional verification and audit connected apps.",
+  high: "Enable 2FA immediately and lock suspicious sessions.",
+};
+
+const EXPLAIN: Record<AlertSeverity, string> = {
+  low: "Minor anomaly observed in monitored metadata.",
+  medium: "Suspicious behavior pattern matched known threat signatures.",
+  high: "High-confidence malicious indicator tied to identity misuse.",
 };
 
 const SEVERITY_BORDER: Record<AlertSeverity, string> = {
@@ -107,7 +120,7 @@ const AlertHistory = ({ alerts, onBack }: AlertHistoryProps) => {
                 style={{ animationDelay: `${Math.min(i * 30, 300)}ms`, animationFillMode: "both" }}
               >
                 <div className="mb-2 flex items-start justify-between gap-2 sm:gap-4">
-                  <p className="text-xs font-body text-foreground">{alert.message}</p>
+                  <div><p className="text-xs font-semibold text-foreground">Threat type: {alert.message}</p><p className="mt-1 text-[11px] text-slate-300">{EXPLAIN[alert.severity]}</p><p className="mt-1 text-[11px] text-cyan-200">Recommended: {ACTIONS[alert.severity]}</p></div>
                   <div className="flex shrink-0 items-center gap-2">
                     <span className={`rounded px-1.5 py-0.5 text-[10px] font-mono uppercase ${SEVERITY_BADGE[alert.severity]}`}>
                       {alert.severity}
