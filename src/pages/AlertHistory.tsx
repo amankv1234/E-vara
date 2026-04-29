@@ -7,9 +7,22 @@ interface AlertHistoryProps {
 }
 
 const SEVERITY_BADGE: Record<AlertSeverity, string> = {
-  low: "text-[hsl(var(--severity-low))] bg-[hsl(var(--severity-low)/0.15)]",
-  medium: "text-[hsl(var(--severity-medium))] bg-[hsl(var(--severity-medium)/0.15)]",
-  high: "text-[hsl(var(--severity-high))] bg-[hsl(var(--severity-high)/0.15)]",
+  low: "text-yellow-300 bg-yellow-400/10",
+  medium: "text-orange-300 bg-orange-400/10",
+  high: "text-red-300 bg-red-500/10",
+};
+
+
+const ACTIONS: Record<AlertSeverity, string> = {
+  low: "Review account activity and rotate weak passwords.",
+  medium: "Enable additional verification and audit connected apps.",
+  high: "Enable 2FA immediately and lock suspicious sessions.",
+};
+
+const EXPLAIN: Record<AlertSeverity, string> = {
+  low: "Minor anomaly observed in monitored metadata.",
+  medium: "Suspicious behavior pattern matched known threat signatures.",
+  high: "High-confidence malicious indicator tied to identity misuse.",
 };
 
 
@@ -77,6 +90,18 @@ const exportPDF = async (alerts: AlertItem[]) => {
   doc.save(`evara-alerts-${new Date().toISOString().slice(0, 10)}.pdf`);
 };
 
+const recommendations: Record<AlertSeverity, string> = {
+  low: "Recommended: Review activity and keep monitoring enabled.",
+  medium: "Recommended: Update passwords and enable security alerts.",
+  high: "Recommended: Enable 2FA immediately and revoke suspicious sessions.",
+};
+
+const alertType = (msg: string) => {
+  if (/login|sign in|credential/i.test(msg)) return "Suspicious login attempt detected";
+  if (/breach|leak|dump/i.test(msg)) return "Potential data exposure event";
+  return "Anomalous identity activity detected";
+};
+
 const AlertHistory = ({ alerts, onBack }: AlertHistoryProps) => {
   return (
     <div className="min-h-screen bg-background">
@@ -126,12 +151,7 @@ const AlertHistory = ({ alerts, onBack }: AlertHistoryProps) => {
                 style={{ animationDelay: `${Math.min(i * 30, 300)}ms`, animationFillMode: "both" }}
               >
                 <div className="mb-2 flex items-start justify-between gap-2 sm:gap-4">
-                  <div>
-                    <p className="text-xs font-body text-foreground">{alert.message}</p>
-                    <p className="mt-1 text-[11px] text-[#8bb6d9]">Threat: {THREAT_GUIDANCE[alert.severity].type}</p>
-                    <p className="text-[11px] text-[#6f99bb]">{THREAT_GUIDANCE[alert.severity].explanation}</p>
-                    <p className="text-[11px] text-[#ffb58f]">Recommended: {THREAT_GUIDANCE[alert.severity].action}</p>
-                  </div>
+                  <p className="text-xs font-body text-foreground">{alertType(alert.message)}</p>
                   <div className="flex shrink-0 items-center gap-2">
                     <span className={`rounded px-1.5 py-0.5 text-[10px] font-mono uppercase ${SEVERITY_BADGE[alert.severity]}`}>
                       {alert.severity}
@@ -141,6 +161,8 @@ const AlertHistory = ({ alerts, onBack }: AlertHistoryProps) => {
                     </span>
                   </div>
                 </div>
+                <p className="mb-2 text-xs text-muted-foreground">{alert.message}</p>
+                <p className="mb-3 text-xs text-primary">{recommendations[alert.severity]}</p>
                 <div className="flex items-center gap-3 flex-wrap">
                   <a
                     href={`https://www.google.com/search?q=${encodeURIComponent(alert.query)}`}

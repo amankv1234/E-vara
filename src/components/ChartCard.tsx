@@ -1,8 +1,13 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
-const ChartCard = ({ title, children }: { title: string; children: ReactNode }) => (
-  <div className="rounded-xl border border-[#244163] bg-[#0c1529] p-4">
-    <h3 className="mb-3 text-sm font-semibold tracking-wide text-[#8eefff]">{title}</h3>
+interface ChartCardProps {
+  title: string;
+  children: ReactNode;
+}
+
+const ChartCard = ({ title, children }: ChartCardProps) => (
+  <div className="rounded-xl border border-cyan-400/30 bg-[#0a0f1c]/85 p-4 shadow-[0_0_30px_rgba(0,229,255,0.1)]">
+    <h4 className="mb-3 text-xs uppercase tracking-[0.2em] text-cyan-200">{title}</h4>
     {children}
   </div>
 );

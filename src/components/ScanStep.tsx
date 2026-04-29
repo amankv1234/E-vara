@@ -1,6 +1,12 @@
-const ScanStep = ({ label, active, complete }: { label: string; active: boolean; complete: boolean }) => (
-  <div className={`rounded-md border px-3 py-2 font-mono text-xs transition-all ${active ? "border-[#00e5ff] bg-[#00e5ff1a] text-[#9ff6ff] shadow-[0_0_14px_#00e5ff66]" : complete ? "border-[#00e5ff55] text-[#86d8e8]" : "border-[#22344f] text-[#5f7a9c]"}`}>
-    {label}
+interface ScanStepProps {
+  text: string;
+  active: boolean;
+  done: boolean;
+}
+
+const ScanStep = ({ text, active, done }: ScanStepProps) => (
+  <div className={`rounded-md border px-3 py-2 text-xs tracking-wide transition-all ${active ? "border-cyan-300 bg-cyan-500/10 text-cyan-100 shadow-[0_0_18px_rgba(0,229,255,0.25)]" : done ? "border-cyan-500/40 bg-cyan-500/5 text-cyan-200" : "border-slate-700 bg-slate-900/60 text-slate-400"}`}>
+    {text}
   </div>
 );
 

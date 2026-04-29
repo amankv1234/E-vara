@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Shield, LogOut, History, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
@@ -6,56 +6,48 @@ import FaceScan from "@/components/FaceScan";
 import IdentityForm from "@/components/IdentityForm";
 import MonitoringFeed, { type AlertItem } from "@/components/MonitoringFeed";
 import ToolsPanel from "@/components/ToolsPanel";
-import StatsCards from "@/components/StatsCards";
 import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
-import CyberIntelligencePanel from "@/components/CyberIntelligencePanel";
 import AlertHistory from "@/pages/AlertHistory";
-import CyberIntelligenceSuite from "@/components/CyberIntelligenceSuite";
-import ThreatScanPanel from "@/components/ThreatScanPanel";
+import FuturisticThreatConsole from "@/components/FuturisticThreatConsole";
+import CyberDashboardLoader from "@/components/CyberDashboardLoader";
 
-interface DashboardProps {
-  onLogout: () => void;
-}
+interface DashboardProps { onLogout: () => void; }
+
+const scanPhases = ["Scanning Digital Footprint...", "Tracking Data Sources...", "Analyzing Behavioral Patterns...", "Detecting Threat Signatures..."];
 
 const Dashboard = ({ onLogout }: DashboardProps) => {
   const { user, logout, getIdentity, saveIdentity } = useAuth();
   const { theme, toggle: toggleTheme } = useTheme();
   const [identity, setIdentity] = useState(getIdentity());
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
-  const [scanCount, setScanCount] = useState(() => {
-    const id = getIdentity();
-    return id?.faceImage ? 1 : 0;
-  });
+  const [scanCount, setScanCount] = useState(() => (getIdentity()?.faceImage ? 1 : 0));
   const [monitoringActive, setMonitoringActive] = useState(false);
   const [monitoringStart, setMonitoringStart] = useState<Date | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [booting, setBooting] = useState(true);
 
-  const riskScore = useMemo(() => {
-    const base = 28;
-    const alertPressure = Math.min(40, alerts.length * 4);
-    const scanSignal = Math.min(18, scanCount * 6);
-    const monitoringSignal = monitoringActive ? 12 : 4;
-    return Math.min(100, base + alertPressure + scanSignal + monitoringSignal);
-  }, [alerts.length, scanCount, monitoringActive]);
+  useEffect(() => {
+    const timer = setTimeout(() => setBooting(false), 5200);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const handleLogout = () => {
-    logout();
-    onLogout();
-  };
+  useEffect(() => {
+    const id = setInterval(() => setScanStage((s) => (s + 1) % (scanPhases.length + 1)), 2200);
+    return () => clearInterval(id);
+  }, []);
 
+  const riskScore = useMemo(() => Math.min(100, 32 + alerts.length * 5 + scanCount * 7 + (monitoringActive ? 12 : 0)), [alerts.length, scanCount, monitoringActive]);
+  const threatLevel = riskScore > 70 ? "HIGH" : riskScore > 45 ? "MEDIUM" : "LOW";
+  const threatColor = threatLevel === "HIGH" ? "text-red-400" : threatLevel === "MEDIUM" ? "text-orange-300" : "text-cyan-300";
+
+  const handleLogout = () => { logout(); onLogout(); };
   const handleFaceComplete = useCallback((imageData: string) => {
     const current = getIdentity();
     const updated = { ...(current || { fullName: "", username: "", socialLink: "", keywords: "" }), faceImage: imageData };
-    saveIdentity(updated);
-    setIdentity(updated);
-    setScanCount((c) => c + 1);
+    saveIdentity(updated); setIdentity(updated); setScanCount((c) => c + 1);
   }, [getIdentity, saveIdentity]);
-
   const handleIdentitySave = useCallback((data: { fullName: string; username: string; socialLink: string; keywords: string }) => {
-    const current = getIdentity();
-    const updated = { ...data, faceImage: current?.faceImage || null };
-    saveIdentity(updated);
-    setIdentity(updated);
+    const current = getIdentity(); const updated = { ...data, faceImage: current?.faceImage || null }; saveIdentity(updated); setIdentity(updated);
   }, [getIdentity, saveIdentity]);
 
   const handleAlertsChange = useCallback((newAlerts: AlertItem[]) => {
@@ -69,7 +61,10 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
   const isSetupComplete = identity?.faceImage && identity?.fullName;
 
-  const trend = alerts.length > 5 ? "UP" : "DOWN";
+
+  if (booting) {
+    return <CyberDashboardLoader />;
+  }
 
   if (showHistory) {
     return <AlertHistory alerts={alerts} onBack={() => setShowHistory(false)} />;
@@ -108,30 +103,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
-        <div className="mb-4 sm:mb-6">
-          <StatsCards
-            alertCount={alerts.length}
-            scanCount={scanCount}
-            monitoringActive={monitoringActive}
-            monitoringStartTime={monitoringStart}
-          />
-        </div>
-        <div className="mb-4 grid gap-4 sm:mb-6 lg:grid-cols-[280px_1fr]">
-          <div className="rounded-xl border border-[#244163] bg-[#0b1529] p-4">
-            <div className="mx-auto h-36 w-36 rounded-full" style={{ background: `conic-gradient(#00e5ff ${riskScore * 3.6}deg, #1c2a40 0deg)` }}>
-              <div className="m-3 flex h-[120px] w-[120px] items-center justify-center rounded-full bg-[#0a0f1c] font-mono text-2xl text-[#b6f6ff]">{riskScore}%</div>
-            </div>
-            <p className="mt-3 text-center text-sm text-[#9fdff8]">Your Digital Risk Level: {riskScore > 65 ? "Medium" : "Low"}</p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border border-[#244163] bg-[#0b1529] p-3"><p className="text-xs text-[#75a9ca]">Threats detected</p><p className="font-mono text-xl text-[#d6f8ff]">{alerts.length}</p></div>
-            <div className="rounded-lg border border-[#244163] bg-[#0b1529] p-3"><p className="text-xs text-[#75a9ca]">Last scan time</p><p className="font-mono text-sm text-[#d6f8ff]">{new Date().toLocaleTimeString()}</p></div>
-            <div className="rounded-lg border border-[#244163] bg-[#0b1529] p-3"><p className="text-xs text-[#75a9ca]">Risk trend</p><p className="font-mono text-xl text-[#d6f8ff]">{trend}</p></div>
-          </div>
-        </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <ChartCard title="Risk Distribution"><div className="h-64"><ResponsiveContainer><PieChart><Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label>{pieData.map((entry) => <Cell key={entry.name} fill={entry.color} />)}</Pie><Tooltip /></PieChart></ResponsiveContainer></div></ChartCard>
+        <ChartCard title="Security Category Analysis"><div className="h-64"><ResponsiveContainer><BarChart data={barData}><CartesianGrid strokeDasharray="3 3" stroke="#1f2f48" /><XAxis dataKey="name" stroke="#9adfff" /><YAxis stroke="#9adfff" /><Tooltip /><Bar dataKey="risk" fill="#00e5ff" radius={[6, 6, 0, 0]} /></BarChart></ResponsiveContainer></div></ChartCard>
+      </div>
 
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-[360px_1fr]">
           <div className="space-y-4 lg:sticky lg:top-[57px] lg:self-start">
@@ -143,13 +120,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           <div className="space-y-4">
             {isSetupComplete ? (
               <>
-                <ThreatScanPanel />
-                <CyberIntelligenceSuite
-                  fullName={identity!.fullName}
-                  username={identity!.username}
-                  alertCount={alerts.length}
-                  monitoringActive={monitoringActive}
-                />
+                <FuturisticThreatConsole alertCount={alerts.length} />
                 <MonitoringFeed
                   fullName={identity!.fullName}
                   username={identity!.username}
