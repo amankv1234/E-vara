@@ -55,12 +55,17 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const counterRef = useRef(0);
 
-  const queries = [fullName, username, ...(keywords ? keywords.split(",").map(k => k.trim()).filter(Boolean) : [])].filter(Boolean);
+  const queries = [
+    fullName,
+    username,
+    ...(keywords ? keywords.split(",").map((keyword) => keyword.trim()).filter(Boolean) : []),
+  ].filter(Boolean);
 
   const generateAlert = useCallback(() => {
     const query = queries[Math.floor(Math.random() * queries.length)] || fullName;
     const template = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)];
     counterRef.current += 1;
+
     const alert: AlertItem = {
       id: counterRef.current,
       message: template.text.replace("{query}", query),
@@ -69,42 +74,55 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
       isNew: true,
       severity: template.severity,
     };
-    setAlerts(prev => {
-      const updated = [alert, ...prev].slice(0, 50);
-      onAlertsChange?.(updated);
-      return updated;
+
+    setAlerts((previousAlerts) => {
+      const updatedAlerts = [alert, ...previousAlerts].slice(0, 50);
+      onAlertsChange?.(updatedAlerts);
+      return updatedAlerts;
     });
+
     setTimeout(() => {
-      setAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, isNew: false } : a));
+      setAlerts((previousAlerts) =>
+        previousAlerts.map((item) => (item.id === alert.id ? { ...item, isNew: false } : item)),
+      );
     }, 3000);
   }, [fullName, queries, onAlertsChange]);
 
   const toggleMonitoring = () => {
     if (monitoring) {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
       intervalRef.current = null;
       setMonitoring(false);
       onMonitoringChange?.(false, null);
-    } else {
-      setMonitoring(true);
-      onMonitoringChange?.(true, new Date());
-      generateAlert();
-      intervalRef.current = setInterval(generateAlert, 8000);
+      return;
     }
+
+    setMonitoring(true);
+    onMonitoringChange?.(true, new Date());
+    generateAlert();
+    intervalRef.current = setInterval(generateAlert, 8000);
   };
 
   useEffect(() => {
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     };
   }, []);
 
+  const wrapperClassName = "neon-panel lift-3d rounded-lg border border-border bg-card p-4 sm:p-6";
+
   return (
-    <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
+    <div className={wrapperClassName}>
       <div className="mb-4 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex min-w-0 items-center gap-2">
           <Activity className="h-4 w-4 shrink-0 text-primary" />
-          <h3 className="text-xs sm:text-sm font-mono font-semibold text-foreground uppercase tracking-wider truncate">Monitoring</h3>
+          <h3 className="truncate text-xs font-mono font-semibold uppercase tracking-wider text-foreground sm:text-sm">
+            Monitoring
+          </h3>
         </div>
         <button
           onClick={toggleMonitoring}
@@ -130,7 +148,7 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
 
       <div className="max-h-[400px] space-y-2 overflow-y-auto pr-1">
         {alerts.length === 0 ? (
-          <p className="py-8 text-center text-xs text-muted-foreground font-body">
+          <p className="py-8 text-center text-xs font-body text-muted-foreground">
             {monitoring ? "Scanning for mentions..." : "Start monitoring to receive alerts"}
           </p>
         ) : (
@@ -140,15 +158,19 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
               className={`relative rounded-md border border-border border-l-2 ${SEVERITY_STYLES[alert.severity]} bg-secondary p-3 transition-all ${alert.isNew ? "alert-wave" : ""}`}
             >
               {alert.isNew && (
-                <span className={`alert-pulse-dot absolute right-3 top-3 h-1.5 w-1.5 rounded-full ${SEVERITY_DOT[alert.severity]}`} />
+                <span
+                  className={`alert-pulse-dot absolute right-3 top-3 h-1.5 w-1.5 rounded-full ${SEVERITY_DOT[alert.severity]}`}
+                />
               )}
               <div className="mb-2 flex items-start justify-between gap-2">
                 <p className="text-xs font-body text-foreground">{alert.message}</p>
-                <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-mono uppercase ${SEVERITY_BADGE[alert.severity]}`}>
+                <span
+                  className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-mono uppercase ${SEVERITY_BADGE[alert.severity]}`}
+                >
                   {alert.severity}
                 </span>
               </div>
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex flex-wrap items-center gap-3">
                 <a
                   href={`https://www.google.com/search?q=${encodeURIComponent(alert.query)}`}
                   target="_blank"
