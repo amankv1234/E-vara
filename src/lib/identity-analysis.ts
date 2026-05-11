@@ -65,15 +65,10 @@ const KNOWN_PLATFORMS: Record<string, string[]> = {
 
 export function detectPlatform(url: string): string | null {
   try {
-    const domain = new URL(url).hostname.toLowerCase().replace(/\.+$/, "");
+    const domain = new URL(url).hostname.toLowerCase();
 
     for (const [platform, domains] of Object.entries(KNOWN_PLATFORMS)) {
-      if (
-        domains.some((candidateDomain) => {
-          const candidate = candidateDomain.toLowerCase().replace(/\.+$/, "");
-          return domain === candidate || domain.endsWith(`.${candidate}`);
-        })
-      ) {
+      if (domains.some((candidate) => domain.includes(candidate))) {
         return platform;
       }
     }
