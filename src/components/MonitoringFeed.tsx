@@ -55,11 +55,7 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const counterRef = useRef(0);
 
-  const queries = [
-    fullName,
-    username,
-    ...(keywords ? keywords.split(",").map((keyword) => keyword.trim()).filter(Boolean) : []),
-  ].filter(Boolean);
+  const queries = [fullName, username, ...(keywords ? keywords.split(",").map((k) => k.trim()).filter(Boolean) : [])].filter(Boolean);
 
   const generateAlert = useCallback(() => {
     const query = queries[Math.floor(Math.random() * queries.length)] || fullName;
@@ -74,17 +70,14 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
       isNew: true,
       severity: template.severity,
     };
-
-    setAlerts((previousAlerts) => {
-      const updatedAlerts = [alert, ...previousAlerts].slice(0, 50);
-      onAlertsChange?.(updatedAlerts);
-      return updatedAlerts;
+    setAlerts((prev) => {
+      const updated = [alert, ...prev].slice(0, 50);
+      onAlertsChange?.(updated);
+      return updated;
     });
 
     setTimeout(() => {
-      setAlerts((previousAlerts) =>
-        previousAlerts.map((item) => (item.id === alert.id ? { ...item, isNew: false } : item)),
-      );
+      setAlerts((prev) => prev.map((a) => (a.id === alert.id ? { ...a, isNew: false } : a)));
     }, 3000);
   }, [fullName, queries, onAlertsChange]);
 
@@ -96,7 +89,11 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
       intervalRef.current = null;
       setMonitoring(false);
       onMonitoringChange?.(false, null);
-      return;
+    } else {
+      setMonitoring(true);
+      onMonitoringChange?.(true, new Date());
+      generateAlert();
+      intervalRef.current = setInterval(generateAlert, 7000);
     }
 
     setMonitoring(true);
@@ -116,20 +113,16 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
   const wrapperClassName = "neon-panel lift-3d rounded-lg border border-border bg-card p-4 sm:p-6";
 
   return (
-    <div className={wrapperClassName}>
+    <div className="glass-panel scanline-wrap rounded-xl p-4 sm:p-6 neon-3d">
       <div className="mb-4 flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <Activity className="h-4 w-4 shrink-0 text-primary" />
-          <h3 className="truncate text-xs font-mono font-semibold uppercase tracking-wider text-foreground sm:text-sm">
-            Monitoring
-          </h3>
+          <h3 className="truncate text-xs font-semibold uppercase tracking-wider text-foreground sm:text-sm">Live Monitoring</h3>
         </div>
         <button
           onClick={toggleMonitoring}
-          className={`shrink-0 rounded-md px-3 py-1.5 text-xs font-mono font-medium transition-all ${
-            monitoring
-              ? "bg-secondary text-muted-foreground hover:text-foreground"
-              : "bg-primary text-primary-foreground hover:opacity-90"
+          className={`neon-button shrink-0 rounded-md px-3 py-1.5 text-xs font-mono font-medium transition-all ${
+            monitoring ? "bg-secondary text-muted-foreground hover:text-foreground" : "bg-primary text-primary-foreground"
           }`}
         >
           {monitoring ? "Stop" : "Start"}
@@ -138,15 +131,12 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
 
       {monitoring && (
         <div className="mb-4 flex items-center gap-2">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
-          </span>
-          <span className="text-xs font-mono text-muted-foreground">Live monitoring active</span>
+          <span className="status-dot h-2.5 w-2.5 rounded-full" />
+          <span className="live-pulse text-xs font-mono text-muted-foreground">Live monitoring active</span>
         </div>
       )}
 
-      <div className="max-h-[400px] space-y-2 overflow-y-auto pr-1">
+      <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
         {alerts.length === 0 ? (
           <p className="py-8 text-center text-xs font-body text-muted-foreground">
             {monitoring ? "Scanning for mentions..." : "Start monitoring to receive alerts"}
@@ -155,20 +145,12 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
           alerts.map((alert) => (
             <div
               key={alert.id}
-              className={`relative rounded-md border border-border border-l-2 ${SEVERITY_STYLES[alert.severity]} bg-secondary p-3 transition-all ${alert.isNew ? "alert-wave" : ""}`}
+              className={`relative rounded-md border border-border border-l-2 ${SEVERITY_STYLES[alert.severity]} bg-secondary/50 p-3 transition-all duration-300 neon-3d ${alert.isNew ? "alert-enter" : ""}`}
             >
-              {alert.isNew && (
-                <span
-                  className={`alert-pulse-dot absolute right-3 top-3 h-1.5 w-1.5 rounded-full ${SEVERITY_DOT[alert.severity]}`}
-                />
-              )}
+              {alert.isNew && <span className={`alert-pulse-dot absolute right-3 top-3 h-1.5 w-1.5 rounded-full ${SEVERITY_DOT[alert.severity]}`} />}
               <div className="mb-2 flex items-start justify-between gap-2">
-                <p className="text-xs font-body text-foreground">{alert.message}</p>
-                <span
-                  className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-mono uppercase ${SEVERITY_BADGE[alert.severity]}`}
-                >
-                  {alert.severity}
-                </span>
+                <p className="text-xs text-foreground">{alert.message}</p>
+                <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] uppercase ${SEVERITY_BADGE[alert.severity]}`}>{alert.severity}</span>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <a
@@ -187,9 +169,7 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
                 >
                   Bing <ExternalLink className="h-3 w-3" />
                 </a>
-                <span className="ml-auto text-[10px] font-mono text-muted-foreground">
-                  {alert.timestamp.toLocaleTimeString()}
-                </span>
+                <span className="ml-auto text-[10px] font-mono text-muted-foreground">{alert.timestamp.toLocaleTimeString()}</span>
               </div>
             </div>
           ))
