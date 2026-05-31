@@ -7,16 +7,18 @@ const stages = [
   "System Ready",
 ];
 
-  const messages = [
-    "Initializing System...",
-    "Loading Security Modules...",
-    "Establishing Secure Environment...",
-    "System Ready",
-  ];
+const CyberDashboardLoader = () => {
+  const [stage, setStage] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const messageInterval = setInterval(() => {
-      setCurrentMessage((prev) => Math.min(prev + 1, messages.length - 1));
+      setStage((prev) => {
+        const next = Math.min(prev + 1, stages.length - 1);
+        if (next === stages.length - 1) setReady(true);
+        return next;
+      });
     }, 1400);
 
     return () => clearInterval(messageInterval);
