@@ -1,136 +1,158 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { Shield, LogOut, History, Sun, Moon } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Shield, LogOut, History, LayoutDashboard, Database, Activity } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import FaceScan from "@/components/FaceScan";
 import IdentityForm from "@/components/IdentityForm";
-import MonitoringFeed, { type AlertItem } from "@/components/MonitoringFeed";
 import ToolsPanel from "@/components/ToolsPanel";
 import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
 import AlertHistory from "@/pages/AlertHistory";
 import FuturisticThreatConsole from "@/components/FuturisticThreatConsole";
 import CyberDashboardLoader from "@/components/CyberDashboardLoader";
+import { ThreatMonitorList } from "@/components/ThreatMonitorList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
-interface DashboardProps { onLogout: () => void; }
-
-const scanPhases = ["Scanning Digital Footprint...", "Tracking Data Sources...", "Analyzing Behavioral Patterns...", "Detecting Threat Signatures..."];
-
-const Dashboard = ({ onLogout }: DashboardProps) => {
+const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
   const { user, logout, getIdentity, saveIdentity } = useAuth();
   const [identity, setIdentity] = useState(getIdentity());
-  const [alerts, setAlerts] = useState<AlertItem[]>([]);
-  const [scanCount, setScanCount] = useState(() => (getIdentity()?.faceImage ? 1 : 0));
-  const [monitoringActive, setMonitoringActive] = useState(false);
-  const [monitoringStart, setMonitoringStart] = useState<Date | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [booting, setBooting] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setBooting(false), 5200);
+    const timer = setTimeout(() => setBooting(false), 3000);
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const id = setInterval(() => setScanStage((s) => (s + 1) % (scanPhases.length + 1)), 2200);
-    return () => clearInterval(id);
-  }, []);
+  const handleLogout = () => {
+    logout();
+    onLogout();
+  };
 
-  const riskScore = useMemo(() => Math.min(100, 32 + alerts.length * 5 + scanCount * 7 + (monitoringActive ? 12 : 0)), [alerts.length, scanCount, monitoringActive]);
-  const threatLevel = riskScore > 70 ? "HIGH" : riskScore > 45 ? "MEDIUM" : "LOW";
-  const threatColor = threatLevel === "HIGH" ? "text-red-400" : threatLevel === "MEDIUM" ? "text-orange-300" : "text-cyan-300";
-
-  const handleLogout = () => { logout(); onLogout(); };
   const handleFaceComplete = useCallback((imageData: string) => {
     const current = getIdentity();
-    const updated = { ...(current || { fullName: "", username: "", socialLink: "", keywords: "" }), faceImage: imageData };
-    saveIdentity(updated); setIdentity(updated); setScanCount((c) => c + 1);
+    const updated = { 
+      ...(current || { fullName: "", username: "", socialLink: "", keywords: "" }), 
+      faceImage: imageData 
+    };
+    saveIdentity(updated);
+    setIdentity(updated);
   }, [getIdentity, saveIdentity]);
-  const handleIdentitySave = useCallback((data: { fullName: string; username: string; socialLink: string; keywords: string }) => {
-    const current = getIdentity(); const updated = { ...data, faceImage: current?.faceImage || null }; saveIdentity(updated); setIdentity(updated);
+
+  const handleIdentitySave = useCallback((data: any) => {
+    const current = getIdentity();
+    const updated = { ...data, faceImage: current?.faceImage || null };
+    saveIdentity(updated);
+    setIdentity(updated);
   }, [getIdentity, saveIdentity]);
 
-  const handleAlertsChange = useCallback((newAlerts: AlertItem[]) => {
-    setAlerts(newAlerts);
-  }, []);
-
-  const handleMonitoringChange = useCallback((active: boolean, startTime: Date | null) => {
-    setMonitoringActive(active);
-    setMonitoringStart(startTime);
-  }, []);
-
-  const isSetupComplete = identity?.faceImage && identity?.fullName;
-
-
-  if (booting) {
-    return <CyberDashboardLoader />;
-  }
+  if (booting) return <CyberDashboardLoader />;
 
   if (showHistory) {
-    return <AlertHistory alerts={alerts} onBack={() => setShowHistory(false)} />;
+    return <AlertHistory alerts={[]} onBack={() => setShowHistory(false)} />;
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0f1c] text-cyan-100">
-      {booting && <FuturisticSplash onDone={() => setBooting(false)} />}
-      <header className="sticky top-0 z-10 border-b border-cyan-500/30 bg-[#0a0f1c]/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-2"><Shield className="h-5 w-5 text-cyan-300" /><h1 className="text-sm font-semibold tracking-[0.2em]">E-VARA</h1></div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setShowHistory(true)} className="rounded border border-cyan-500/40 px-2 py-1 text-xs"> <History className="h-3 w-3" /> </button>
-            <span className="hidden text-xs text-cyan-300/70 lg:inline">{user?.email}</span>
-            <button onClick={() => { logout(); onLogout(); }} className="rounded border border-cyan-500/40 px-2 py-1 text-xs"> <LogOut className="h-3 w-3" /> </button>
+    <div className="min-h-screen bg-[#050810] text-foreground selection:bg-primary/30">
+      {/* HUD Header */}
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/20 rounded-md">
+              <Shield className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-sm font-black tracking-[0.3em] uppercase">E-Vara</h1>
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest">Personal Defense OS</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex flex-col items-end mr-4">
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Auth Session</span>
+              <span className="text-xs font-mono text-primary/80">{user?.email}</span>
+            </div>
+            
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setShowHistory(true)}
+                className="p-2 rounded-md border border-border/50 bg-secondary/30 hover:bg-secondary/50 transition-all"
+              >
+                <History className="h-4 w-4" />
+              </button>
+              <button 
+                onClick={handleLogout}
+                className="p-2 rounded-md border border-destructive/20 bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <ChartCard title="Risk Distribution"><div className="h-64"><ResponsiveContainer><PieChart><Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label>{pieData.map((entry) => <Cell key={entry.name} fill={entry.color} />)}</Pie><Tooltip /></PieChart></ResponsiveContainer></div></ChartCard>
-        <ChartCard title="Security Category Analysis"><div className="h-64"><ResponsiveContainer><BarChart data={barData}><CartesianGrid strokeDasharray="3 3" stroke="#1f2f48" /><XAxis dataKey="name" stroke="#9adfff" /><YAxis stroke="#9adfff" /><Tooltip /><Bar dataKey="risk" fill="#00e5ff" radius={[6, 6, 0, 0]} /></BarChart></ResponsiveContainer></div></ChartCard>
-      </div>
+      <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+        <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
+          
+          {/* Sidebar Control Panel */}
+          <aside className="space-y-6">
+            <section className="space-y-6 lg:sticky lg:top-24">
+              <FaceScan onComplete={handleFaceComplete} existingImage={identity?.faceImage || null} />
+              <IdentityForm onSave={handleIdentitySave} initial={identity} />
+              <ToolsPanel identity={identity} />
+            </section>
+          </aside>
 
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-[360px_1fr]">
-          <div className="space-y-4 lg:sticky lg:top-[57px] lg:self-start">
-            <FaceScan onComplete={handleFaceComplete} existingImage={identity?.faceImage || null} />
-            <IdentityForm onSave={handleIdentitySave} initial={identity} />
-            <ToolsPanel identity={identity} />
-          </div>
-          <div className="md:col-span-3 grid gap-2 sm:grid-cols-3">
-            <QuickStat label="Your Digital Risk Level" value={riskLevel} />
-            <QuickStat label="Threats detected" value={String(alerts.length)} />
-            <QuickStat label="Last scan time" value={monitoringStart ? monitoringStart.toLocaleTimeString() : "N/A"} />
-          </div>
-        </section>
+          {/* Main Intelligence Feed */}
+          <div className="space-y-8">
+            <FuturisticThreatConsole alertCount={0} />
 
-          <div className="space-y-4">
-            {isSetupComplete ? (
-              <>
-                <FuturisticThreatConsole alertCount={alerts.length} />
-                <MonitoringFeed
-                  fullName={identity!.fullName}
-                  username={identity!.username}
-                  keywords={identity!.keywords || ""}
-                  onAlertsChange={handleAlertsChange}
-                  onMonitoringChange={handleMonitoringChange}
-                />
-                <SearchResultsIntelligence fullName={identity!.fullName} username={identity!.username} />
-              </>
-            ) : (
-              <div className="glass-panel rounded-xl p-8 text-center sm:p-12">
-                <Shield className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground sm:text-sm">
-                  Complete identity verification and profile metadata to activate the cyber intelligence layer.
-                </p>
+            <Tabs defaultValue="findings" className="w-full">
+              <div className="flex items-center justify-between mb-4">
+                <TabsList className="bg-secondary/30 border border-border/50 p-1">
+                  <TabsTrigger value="findings" className="gap-2 text-[10px] uppercase font-bold tracking-widest">
+                    <Activity className="h-3 w-3" /> Findings
+                  </TabsTrigger>
+                  <TabsTrigger value="intelligence" className="gap-2 text-[10px] uppercase font-bold tracking-widest">
+                    <Database className="h-3 w-3" /> OSINT
+                  </TabsTrigger>
+                  <TabsTrigger value="dashboard" className="gap-2 text-[10px] uppercase font-bold tracking-widest">
+                    <LayoutDashboard className="h-3 w-3" /> Overview
+                  </TabsTrigger>
+                </TabsList>
+                
+                <Badge variant="outline" className="font-mono text-[9px] border-primary/30 text-primary">
+                  LIVE_FEED: ACTIVE
+                </Badge>
               </div>
-            )}
 
-        <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
-          <div className="space-y-4"><FaceScan onComplete={handleFaceComplete} existingImage={identity?.faceImage || null} /><IdentityForm onSave={handleIdentitySave} initial={identity} /><ToolsPanel identity={identity} /></div>
-          <div className="space-y-4"><MonitoringFeed fullName={identity?.fullName || ""} username={identity?.username || ""} keywords={identity?.keywords || ""} onAlertsChange={setAlerts} onMonitoringChange={(a, t) => { setMonitoringActive(a); setMonitoringStart(t); }} /><SearchResultsIntelligence fullName={identity?.fullName || ""} username={identity?.username || ""} /></div>
+              <TabsContent value="findings" className="mt-0 focus-visible:ring-0">
+                <ThreatMonitorList />
+              </TabsContent>
+
+              <TabsContent value="intelligence" className="mt-0 focus-visible:ring-0 space-y-6">
+                <SearchResultsIntelligence 
+                  fullName={identity?.fullName || ""} 
+                  username={identity?.username || ""} 
+                />
+              </TabsContent>
+
+              <TabsContent value="dashboard" className="mt-0 focus-visible:ring-0">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="glass-panel p-6 rounded-xl border border-border/50 h-[300px] flex items-center justify-center text-muted-foreground italic text-xs">
+                    Security Distribution Visualization Coming Soon
+                  </div>
+                  <div className="glass-panel p-6 rounded-xl border border-border/50 h-[300px] flex items-center justify-center text-muted-foreground italic text-xs">
+                    Threat Attack Vector Analysis Coming Soon
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
         </div>
       </main>
     </div>
   );
 };
-
-const QuickStat = ({ label, value }: { label: string; value: string }) => <div className="rounded border border-cyan-600/30 bg-cyan-950/10 p-3"><p className="text-[10px] uppercase tracking-[0.15em] text-cyan-300">{label}</p><p className="text-lg text-cyan-100">{value}</p></div>;
 
 export default Dashboard;
