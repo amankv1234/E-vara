@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState } from "react";
 import { Search, ExternalLink, AlertTriangle, Lock, Loader2, ShieldAlert, CheckCircle, FileText } from "lucide-react";
 import { supabase, isSimulationMode } from "@/integrations/supabase/client";
@@ -105,7 +105,8 @@ const ToolsPanel = ({ identity }: ToolsPanelProps) => {
       });
       if (error) throw error;
       setScanResults(data as ScanResponse);
-    } catch (e: any) {
+    } catch (err) {
+      const e = err as Error;
       setScanError(e.message || "Scan failed. Please try again.");
     } finally {
       setScanning(false);

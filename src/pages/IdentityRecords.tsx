@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Shield, Database, Plus, Trash2, Search, Globe, Mail, Fingerprint } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -7,28 +6,36 @@ import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase, isSimulationMode } from "@/integrations/supabase/client";
 
+interface MonitoredRecord {
+  id: string;
+  type: string;
+  value: string;
+  status: string;
+  risk: "High" | "Medium" | "Low";
+}
+
 const IdentityRecords = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: records = [], isLoading } = useQuery({
+  const { data: records = [], isLoading } = useQuery<MonitoredRecord[], Error>({
     queryKey: ["monitored-records", user?.id],
     queryFn: async () => {
       if (isSimulationMode) {
         return [
-          { id: 1, type: "Primary Email", value: user?.email || "target@e-vara.io", status: "Active", risk: "Low" },
-          { id: 2, type: "Public Alias", value: "@exec_alpha_01", status: "Monitoring", risk: "Medium" },
-          { id: 3, type: "Domain", value: "vault.executive-assets.com", status: "Active", risk: "Low" },
+          { id: "1", type: "email", value: user?.email || "target@e-vara.io", status: "Active", risk: "Low" },
+          { id: "2", type: "username", value: "@exec_alpha_01", status: "Monitoring", risk: "Medium" },
+          { id: "3", type: "domain", value: "vault.executive-assets.com", status: "Active", risk: "Low" },
         ];
       }
 
       const { data, error } = await supabase
-        .from('monitored_identities' as any)
-        .select('*')
-        .eq('user_id', user?.id);
+        .from('monitored_identities')
+        .select('id, identity_type, identity_value_encrypted, is_active, risk_score')
+        .eq('user_id', user?.id || "");
       
       if (error) throw error;
-      return data.map((d: any) => ({
+      return data.map((d) => ({
         id: d.id,
         type: d.identity_type,
         value: d.identity_value_encrypted,
@@ -40,14 +47,17 @@ const IdentityRecords = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: any) => {
+    mutationFn: async (id: string) => {
       if (isSimulationMode) return;
-      const { error } = await supabase.from('monitored_identities' as any).delete().eq('id', id);
-      if (error) throw error;
+      const { error } = await supabase.from('monitored_identities').delete().eq('id', id);
+      if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monitored-records"] });
       toast.error("Record De-linked");
+    },
+    onError: (err: Error) => {
+      toast.error("Failed to delete record", { description: err.message });
     }
   });
 
@@ -87,13 +97,13 @@ const IdentityRecords = () => {
           </div>
 
           <div className="grid gap-4">
-            {records.map((record: any) => (
+            {records.map((record) => (
               <div key={record.id} className="group p-6 rounded-[20px] border border-white/5 bg-[#11141B] hover:border-primary/30 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
                 <div className="absolute inset-0 hud-grid opacity-[0.02] pointer-events-none" />
                 
                 <div className="flex items-center gap-6 relative z-10">
                   <div className={`h-12 w-12 rounded-xl flex items-center justify-center border ${record.risk === 'High' ? 'border-alert/30 bg-alert/5' : 'border-white/10 bg-white/5'}`}>
-                    {String(record.type).includes("Email") ? <Mail className="h-5 w-5 text-primary" /> : <Globe className="h-5 w-5 text-secondary" />}
+                    {String(record.type).includes("email") ? <Mail className="h-5 w-5 text-primary" /> : <Globe className="h-5 w-5 text-secondary" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-3 mb-1">

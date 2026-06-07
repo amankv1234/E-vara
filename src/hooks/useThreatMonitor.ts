@@ -3,7 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 
 const STORAGE_KEY = 'evara-local-findings';
 
-const mockFindings = [
+export interface ThreatFinding {
+  id: string;
+  severity: "low" | "medium" | "high" | "critical";
+  title: string;
+  source: string;
+  description: string;
+  found_at: string;
+}
+
+const mockFindings: ThreatFinding[] = [
   {
     id: '1',
     severity: 'high',
@@ -23,29 +32,37 @@ const mockFindings = [
 ];
 
 export const useThreatMonitor = () => {
-  return useQuery({
+  return useQuery<ThreatFinding[], Error>({
     queryKey: ["threat-findings"],
     queryFn: async () => {
       if (isSimulationMode) {
         const local = localStorage.getItem(STORAGE_KEY);
-        return local ? JSON.parse(local) : mockFindings;
+        return local ? JSON.parse(local) as ThreatFinding[] : mockFindings;
       }
 
       try {
         const { data, error } = await supabase
-          .from('threat_findings' as any)
-          .select('*')
-          .order('found_at', { ascending: false });
+          .from('identity_breaches')
+          .select('id, severity, source_name, description, created_at')
+          .order('created_at', { ascending: false });
         
         if (error) throw error;
         
-        const results = data || [];
+        const results = (data || []).map((row) => ({
+          id: row.id,
+          severity: row.severity as ThreatFinding["severity"],
+          title: `Exposure Detected in ${row.source_name}`,
+          source: row.source_name,
+          description: row.description || "Data point leaked.",
+          found_at: row.created_at
+        }));
+
         localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
         return results;
       } catch (err) {
         console.warn('Supabase unreachable, using local intelligence cache');
         const local = localStorage.getItem(STORAGE_KEY);
-        return local ? JSON.parse(local) : mockFindings;
+        return local ? JSON.parse(local) as ThreatFinding[] : mockFindings;
       }
     },
     staleTime: 30000, // 30 seconds cache

@@ -1,12 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Shield, CreditCard, Check, ArrowUpRight, Download, Clock, Zap, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { isSimulationMode } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+
+interface Invoice {
+  id: string;
+  date: string;
+  amount: string;
+  status: string;
+}
 
 const BillingPage = () => {
-  const { data: invoices = [], isLoading } = useQuery({
+  const { profile } = useAuth();
+  
+  const { data: invoices = [], isLoading } = useQuery<Invoice[], Error>({
     queryKey: ["billing-history"],
     queryFn: async () => {
       // In a real SaaS, this would query a 'billing' table or Stripe API via Edge Function
@@ -17,9 +26,14 @@ const BillingPage = () => {
           { id: "INV-002", date: "Sep 01, 2026", amount: "$29.00", status: "Paid" },
         ];
       }
-      return []; // Real logic placeholder
+      return []; // Ready for real Stripe integration
     }
   });
+
+  const handleCheckout = () => {
+    // Basic checkout stub ready for Stripe Payment Links
+    window.open("https://billing.stripe.com/p/login/test_xxxxxxxx", "_blank");
+  };
 
   return (
     <div className="min-h-screen bg-[#050608] text-foreground font-mono selection:bg-primary/30">
@@ -55,24 +69,20 @@ const BillingPage = () => {
                <div className="relative z-10 flex flex-col md:flex-row justify-between gap-8">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/80 mb-2">Current Protocol</p>
-                    <h2 className="text-3xl font-black uppercase mb-4">Executive Defense</h2>
+                    <h2 className="text-3xl font-black uppercase mb-4">{profile?.tier || 'Executive'} Defense</h2>
                     <p className="text-sm text-muted-foreground font-body leading-relaxed mb-8 max-w-sm">
                       Continuous OSINT scanning, priority data crawling, and automated PDF dossiers active.
                     </p>
                     <div className="flex gap-4">
-                       <Button className="bg-primary hover:bg-primary/90 text-white rounded-[12px] px-6 text-[10px] font-bold uppercase tracking-widest">
-                         Change Tier
-                       </Button>
-                       <Button variant="outline" className="border-white/10 rounded-[12px] px-6 text-[10px] font-bold uppercase tracking-widest">
-                         Cancel Plan
+                       <Button onClick={handleCheckout} className="bg-primary hover:bg-primary/90 text-white rounded-[12px] px-6 text-[10px] font-bold uppercase tracking-widest">
+                         Manage via Stripe
                        </Button>
                     </div>
                   </div>
                   <div className="text-right flex flex-col justify-between">
                      <div>
-                       <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground mb-1">Next Payment</p>
-                       <p className="text-2xl font-black">$29.00</p>
-                       <p className="text-[10px] text-muted-foreground mt-1 uppercase">Due Nov 01, 2026</p>
+                       <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground mb-1">Status</p>
+                       <p className="text-2xl font-black capitalize">{profile?.billing_status || 'Active'}</p>
                      </div>
                      <div className="flex items-center gap-2 text-[10px] font-bold text-success uppercase mt-8 md:mt-0">
                         <Check className="h-3 w-3" /> System Synchronized
@@ -88,11 +98,11 @@ const BillingPage = () => {
                     <CreditCard className="h-5 w-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold uppercase">Visa •••• 4242</p>
-                    <p className="text-[10px] text-muted-foreground uppercase">Exp 12/28</p>
+                    <p className="text-sm font-bold uppercase">Stripe Billing</p>
+                    <p className="text-[10px] text-muted-foreground uppercase">Managed Portal</p>
                   </div>
                </div>
-               <Button variant="outline" className="w-full border-white/10 rounded-[12px] text-[10px] font-bold uppercase tracking-widest">
+               <Button onClick={handleCheckout} variant="outline" className="w-full border-white/10 rounded-[12px] text-[10px] font-bold uppercase tracking-widest">
                  Update Method
                </Button>
             </div>
@@ -119,7 +129,7 @@ const BillingPage = () => {
                  <tbody className="text-sm">
                     {isLoading ? (
                       <tr><td colSpan={5} className="px-6 py-12 text-center text-muted-foreground animate-pulse">Decrypting ledger...</td></tr>
-                    ) : invoices.map((inv: any) => (
+                    ) : invoices.map((inv) => (
                       <tr key={inv.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                         <td className="px-6 py-4 font-bold">{inv.id}</td>
                         <td className="px-6 py-4 text-muted-foreground">{inv.date}</td>

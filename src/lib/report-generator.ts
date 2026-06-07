@@ -1,8 +1,30 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { jsPDF } from "jspdf";
+
+import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export const generateExecutiveReport = async (identity: any, scanResults: any) => {
+export interface ReportIdentity {
+  fullName: string;
+  email?: string;
+  username?: string;
+}
+
+export interface ReportScanResults {
+  summary: {
+    totalBreaches: number;
+    highSeverity: number;
+    mediumSeverity: number;
+    lowSeverity: number;
+  };
+  results: {
+    breachName: string;
+    source: string;
+    severity: string;
+    dataTypes: string[];
+    description: string;
+  }[];
+}
+
+export const generateExecutiveReport = async (identity: ReportIdentity, scanResults: ReportScanResults) => {
   const doc = new jsPDF();
   const timestamp = new Date().toLocaleString();
 
@@ -61,9 +83,9 @@ export const generateExecutiveReport = async (identity: any, scanResults: any) =
   // --- Breach Details ---
   if (scanResults?.results && scanResults.results.length > 0) {
     doc.setFontSize(18);
-    doc.text("Vulnerability Log", 20, (doc as any).lastAutoTable.finalY + 20);
+    doc.text("Vulnerability Log", 20, (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20);
 
-    const breachBody = scanResults.results.map((r: any) => [
+    const breachBody = scanResults.results.map((r: ReportScanResults["results"][0]) => [
       r.breachName,
       r.severity.toUpperCase(),
       r.source,
@@ -72,7 +94,7 @@ export const generateExecutiveReport = async (identity: any, scanResults: any) =
     ]);
 
     autoTable(doc, {
-      startY: (doc as any).lastAutoTable.finalY + 30,
+      startY: (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 30,
       head: [["Breach", "Severity", "Source", "Exposed Data", "Date"]],
       body: breachBody,
       headStyles: { fillColor: [5, 8, 16] },
@@ -91,7 +113,7 @@ export const generateExecutiveReport = async (identity: any, scanResults: any) =
   } else {
     doc.setFontSize(14);
     doc.setTextColor(5, 150, 105);
-    doc.text("No critical exposure found in active databases.", 20, (doc as any).lastAutoTable.finalY + 20);
+    doc.text("No critical exposure found in active databases.", 20, (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20);
   }
 
   // --- Footnote ---

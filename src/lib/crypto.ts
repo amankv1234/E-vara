@@ -10,7 +10,7 @@ export async function sha256(message: string): Promise<string> {
   return hashHex;
 }
 
-export function cn(...inputs: any[]) {
+export function cn(...inputs: unknown[]) {
   // Simplified version of tailwind-merge + clsx if not available, 
   // but assuming standard utils.ts exists
   return inputs.filter(Boolean).join(' ');

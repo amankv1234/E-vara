@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState, useMemo } from "react";
 import { Shield, MessageSquare, Send, User, Bot, Clock, Lock, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";

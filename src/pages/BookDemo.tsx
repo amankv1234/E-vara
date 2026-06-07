@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState } from "react";
 import { Shield, Calendar, Users, Building, Mail, ChevronRight, CheckCircle2, Globe, Clock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";

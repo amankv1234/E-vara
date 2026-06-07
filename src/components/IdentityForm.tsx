@@ -60,7 +60,8 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
       });
 
       if (onSave) onSave({ email, username, fullName });
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as Error;
       console.error("Identity registration failed:", error);
       toast.error("Operational Error", {
         description: "Failed to establish identity link. Check network status."

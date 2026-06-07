@@ -33,14 +33,16 @@ const AuthPage = ({ onAuth }: AuthPageProps) => {
         setMode("login");
         setPassword("");
         setConfirmPassword("");
-      } catch (err: any) {
+      } catch (error) {
+        const err = error as Error;
         setError(err.message || "Registration failed");
       }
     } else {
       try {
         await login(email, password);
         onAuth();
-      } catch (err: any) {
+      } catch (error) {
+        const err = error as Error;
         setError(err.message || "Authentication failed");
       }
     }

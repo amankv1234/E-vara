@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Shield, Lock, Settings, HelpCircle, LogOut, ArrowRight, User, Terminal, Database, Bell, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";

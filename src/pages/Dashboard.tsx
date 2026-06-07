@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo } from "react";
-import { Shield, LogOut, History, LayoutDashboard, Database, Activity, CreditCard, User, Bot, Clock, Lock, ChevronRight, Send } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { Shield, LogOut, History, LayoutDashboard, Database, Activity, CreditCard } from "lucide-react";
+import { useAuth, IdentityInfo } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import FaceScan from "@/components/FaceScan";
-import IdentityForm from "@/components/IdentityForm";
+import IdentityForm, { IdentityData } from "@/components/IdentityForm";
 import ToolsPanel from "@/components/ToolsPanel";
 import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
 import AlertHistory from "@/pages/AlertHistory";
@@ -40,8 +40,8 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
     saveIdentity({ ...identity, faceImage: imageData });
   }, [identity, saveIdentity]);
 
-  const handleIdentitySave = useCallback((data: any) => {
-    saveIdentity({ ...data, faceImage: identity?.faceImage || null });
+  const handleIdentitySave = useCallback((data: IdentityData) => {
+    saveIdentity({ ...data, email: data.email, faceImage: identity?.faceImage || null });
   }, [identity, saveIdentity]);
 
   if (booting) return <CyberDashboardLoader />;

@@ -2,7 +2,13 @@ import { Shield, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-const Navbar = ({ isScrolled, mobileMenuOpen, setMobileMenuOpen }: any) => (
+interface NavbarProps {
+  isScrolled: boolean;
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
+}
+
+const Navbar = ({ isScrolled, mobileMenuOpen, setMobileMenuOpen }: NavbarProps) => (
   <nav className={`fixed top-0 left-0 right-0 z-[100] h-20 transition-all duration-300 ${isScrolled ? 'bg-[#050608]/80 backdrop-blur-xl border-b border-white/5' : 'bg-transparent'}`}>
     <div className="container mx-auto h-full px-6 flex items-center justify-between">
       <div className="flex items-center gap-2">
