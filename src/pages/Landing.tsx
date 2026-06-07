@@ -39,6 +39,9 @@ const LandingPage = () => {
             <Link to="/book-demo">
               <Button variant="ghost" className="hidden sm:inline-flex uppercase tracking-widest text-[10px] font-bold">Book Demo</Button>
             </Link>
+            <Link to="/client-portal">
+              <Button variant="outline" className="hidden lg:inline-flex border-white/10 text-[10px] uppercase font-bold tracking-widest">Client Portal</Button>
+            </Link>
             <Link to="/auth">
               <Button className="bg-primary hover:bg-primary/90 text-white rounded-[14px] px-8 py-6 uppercase tracking-widest text-[10px] font-bold security-orange-glow">Start Free</Button>
             </Link>
@@ -280,6 +283,7 @@ const LandingPage = () => {
             <div>
               <h4 className="font-bold uppercase tracking-widest text-xs mb-6">Core Systems</h4>
               <ul className="space-y-4 text-sm text-muted-foreground font-mono uppercase tracking-tighter">
+                <li><Link to="/client-portal" className="hover:text-primary transition-colors">Client Portal</Link></li>
                 <li><button className="hover:text-primary transition-colors">Neural Net Scan</button></li>
                 <li><button className="hover:text-primary transition-colors">Identity Engine</button></li>
                 <li><button className="hover:text-primary transition-colors">Threat Surface</button></li>

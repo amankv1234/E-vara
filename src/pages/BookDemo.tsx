@@ -49,7 +49,7 @@ const BookDemo = () => {
             </div>
             <span className="text-xl font-black tracking-tight uppercase font-mono">E-VARA</span>
           </Link>
-          <Link to="/auth">
+          <Link to="/client-portal">
             <Button variant="outline" className="border-white/10 rounded-[12px] text-[10px] uppercase font-bold tracking-widest">Client Portal</Button>
           </Link>
         </div>
