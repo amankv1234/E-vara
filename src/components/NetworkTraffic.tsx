@@ -1,8 +1,14 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+interface TrafficData {
+  time: string;
+  traffic: number;
+  threats: number;
+}
+
 const NetworkTraffic = () => {
-  const [data, setData] = useState(() => {
+  const [data, setData] = useState<TrafficData[]>(() => {
     return Array.from({ length: 20 }, (_, i) => ({
       time: `${i}:00`,
       traffic: Math.floor(Math.random() * 300) + 200,
@@ -10,20 +16,34 @@ const NetworkTraffic = () => {
     }));
   });
 
+  // PERFORMANCE HARDENING: Use a ref for the interval to ensure clean disposal
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setData(prev => {
-        const next = [...prev.slice(1)];
-        const lastTime = parseInt(prev[prev.length - 1].time);
+        // ENFORCE MEMORY INTEGRITY: Strict buffer limit of 25 nodes
+        const next = [...prev];
+        if (next.length >= 25) {
+           next.shift();
+        }
+        
+        const lastTimeParts = prev[prev.length - 1].time.split(':');
+        const nextHour = (parseInt(lastTimeParts[0]) + 1) % 24;
+        
         next.push({
-          time: `${(lastTime + 1) % 24}:00`,
+          time: `${nextHour}:00`,
           traffic: Math.floor(Math.random() * 300) + 200,
           threats: Math.floor(Math.random() * 15),
         });
+        
         return next;
       });
     }, 3000);
-    return () => clearInterval(interval);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, []);
 
   return (
@@ -66,6 +86,7 @@ const NetworkTraffic = () => {
               itemStyle={{ color: '#ffffff' }}
             />
             <Area 
+              isAnimationActive={false} // Performance: Disable animations for high-frequency updates
               type="monotone" 
               dataKey="traffic" 
               stroke="#4A8BFF" 
@@ -74,6 +95,7 @@ const NetworkTraffic = () => {
               strokeWidth={2}
             />
             <Area 
+              isAnimationActive={false} 
               type="monotone" 
               dataKey="threats" 
               stroke="#FF6A1A" 

@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useCallback, useEffect } from "react";
-import { Shield, LogOut, History, LayoutDashboard, Database, Activity, CreditCard } from "lucide-react";
+import { useState, useCallback, useMemo } from "react";
+import { Shield, LogOut, History, LayoutDashboard, Database, Activity, CreditCard, User, Bot, Clock, Lock, ChevronRight, Send } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import FaceScan from "@/components/FaceScan";
@@ -20,17 +19,13 @@ import AIInsightPanel from "@/components/AIInsightPanel";
 import NetworkTraffic from "@/components/NetworkTraffic";
 
 const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
-  const { user, identity, logout, saveIdentity } = useAuth();
+  const { user, profile, identity, logout, saveIdentity } = useAuth();
   const [showHistory, setShowHistory] = useState(false);
   const [booting, setBooting] = useState(true);
 
-  // Deterministic NODE_ID based on user.id
-  const nodeId = useMemo(() => {
-    if (!user?.id) return "INITIALIZING";
-    return `NODE-${user.id.substring(0, 8).toUpperCase()}`;
-  }, [user]);
+  const nodeId = profile?.node_id_stable || "INITIALIZING...";
 
-  useEffect(() => {
+  useMemo(() => {
     const timer = setTimeout(() => setBooting(false), 2500);
     return () => clearTimeout(timer);
   }, []);
@@ -57,7 +52,6 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
 
   return (
     <div className="min-h-screen bg-[#050810] text-foreground selection:bg-primary/30">
-      {/* HUD Header */}
       <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
@@ -77,29 +71,23 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
             </div>
             
             <div className="hidden lg:flex flex-col items-end mr-4 border-l border-border/40 pl-4">
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Kernel v2.4.1-STABLE</span>
-              <span className="text-[9px] font-mono text-primary/50">NODE_ID: {nodeId}</span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Kernel v2.5.0-HARDENED</span>
+              <span className="text-[9px] font-mono text-primary/50 uppercase">ID: {nodeId.substring(0, 15)}...</span>
             </div>
             
             <div className="flex gap-2">
-              <Link to="/pricing">
-                <button 
-                  className="p-2 rounded-md border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all"
-                  title="Subscription Plans"
-                >
+              <Badge variant="outline" className="mr-2 uppercase font-bold text-[9px] border-primary/40 text-primary px-3">
+                {profile?.tier || 'TACTICAL'}_TIER
+              </Badge>
+              <Link to="/billing">
+                <button className="p-2 rounded-md border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all">
                   <CreditCard className="h-4 w-4" />
                 </button>
               </Link>
-              <button 
-                onClick={() => setShowHistory(true)}
-                className="p-2 rounded-md border border-border/50 bg-secondary/30 hover:bg-secondary/50 transition-all"
-              >
+              <button onClick={() => setShowHistory(true)} className="p-2 rounded-md border border-border/50 bg-secondary/30 hover:bg-secondary/50 transition-all">
                 <History className="h-4 w-4" />
               </button>
-              <button 
-                onClick={handleLogout}
-                className="p-2 rounded-md border border-destructive/20 bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all"
-              >
+              <button onClick={handleLogout} className="p-2 rounded-md border border-destructive/20 bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all">
                 <LogOut className="h-4 w-4" />
               </button>
             </div>
@@ -109,8 +97,6 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
 
       <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
         <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
-          
-          {/* Sidebar Control Panel */}
           <aside className="space-y-6">
             <section className="space-y-6 lg:sticky lg:top-24">
               <ConnectivityStatus />
@@ -120,10 +106,8 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
             </section>
           </aside>
 
-          {/* Main Intelligence Feed */}
           <div className="space-y-8">
             <FuturisticThreatConsole alertCount={0} />
-
             <Tabs defaultValue="findings" className="w-full">
               <div className="flex items-center justify-between mb-4">
                 <TabsList className="bg-secondary/30 border border-border/50 p-1">
@@ -137,10 +121,6 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
                     <LayoutDashboard className="h-3 w-3" /> Overview
                   </TabsTrigger>
                 </TabsList>
-                
-                <Badge variant="outline" className="font-mono text-[9px] border-primary/30 text-primary">
-                  LIVE_FEED: ACTIVE
-                </Badge>
               </div>
 
               <TabsContent value="findings" className="mt-0 focus-visible:ring-0">
@@ -168,26 +148,8 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
               </TabsContent>
             </Tabs>
           </div>
-
         </div>
       </main>
-
-      <footer className="mt-12 border-t border-border/40 bg-background/40 py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-primary/60" />
-              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">© 2026 E-Vara Security Systems. Built for operational awareness.</span>
-            </div>
-            <div className="flex gap-6 text-[10px] font-mono uppercase text-muted-foreground tracking-tighter">
-              <button className="hover:text-primary transition-colors">Terminals of Service</button>
-              <button className="hover:text-primary transition-colors">Privacy Protocol</button>
-              <button className="hover:text-primary transition-colors">API Documentation</button>
-              <button className="hover:text-primary transition-colors">Network Status</button>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
