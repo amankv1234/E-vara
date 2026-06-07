@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect } from "react";
-import { Shield, LogOut, History, LayoutDashboard, Database, Activity } from "lucide-react";
+import { Shield, LogOut, History, LayoutDashboard, Database, Activity, CreditCard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 import FaceScan from "@/components/FaceScan";
 import IdentityForm from "@/components/IdentityForm";
 import ToolsPanel from "@/components/ToolsPanel";
@@ -9,8 +11,12 @@ import AlertHistory from "@/pages/AlertHistory";
 import FuturisticThreatConsole from "@/components/FuturisticThreatConsole";
 import CyberDashboardLoader from "@/components/CyberDashboardLoader";
 import { ThreatMonitorList } from "@/components/ThreatMonitorList";
+import ConnectivityStatus from "@/components/ConnectivityStatus";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import DigitalFootprintMap from "@/components/DigitalFootprintMap";
+import AttackSimulationPanel from "@/components/AttackSimulationPanel";
+import AIInsightPanel from "@/components/AIInsightPanel";
 
 const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
   const { user, logout, getIdentity, saveIdentity } = useAuth();
@@ -73,6 +79,14 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
             </div>
             
             <div className="flex gap-2">
+              <Link to="/pricing">
+                <button 
+                  className="p-2 rounded-md border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all"
+                  title="Subscription Plans"
+                >
+                  <CreditCard className="h-4 w-4" />
+                </button>
+              </Link>
               <button 
                 onClick={() => setShowHistory(true)}
                 className="p-2 rounded-md border border-border/50 bg-secondary/30 hover:bg-secondary/50 transition-all"
@@ -96,6 +110,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
           {/* Sidebar Control Panel */}
           <aside className="space-y-6">
             <section className="space-y-6 lg:sticky lg:top-24">
+              <ConnectivityStatus />
               <FaceScan onComplete={handleFaceComplete} existingImage={identity?.faceImage || null} />
               <IdentityForm onSave={handleIdentitySave} initial={identity} />
               <ToolsPanel identity={identity} />
@@ -136,15 +151,12 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
                 />
               </TabsContent>
 
-              <TabsContent value="dashboard" className="mt-0 focus-visible:ring-0">
+              <TabsContent value="dashboard" className="mt-0 focus-visible:ring-0 space-y-6">
                 <div className="grid gap-6 md:grid-cols-2">
-                  <div className="glass-panel p-6 rounded-xl border border-border/50 h-[300px] flex items-center justify-center text-muted-foreground italic text-xs">
-                    Security Distribution Visualization Coming Soon
-                  </div>
-                  <div className="glass-panel p-6 rounded-xl border border-border/50 h-[300px] flex items-center justify-center text-muted-foreground italic text-xs">
-                    Threat Attack Vector Analysis Coming Soon
-                  </div>
+                  <DigitalFootprintMap username={identity?.username || "identity"} />
+                  <AttackSimulationPanel email={identity?.email || "classified"} />
                 </div>
+                <AIInsightPanel score={65} alertCount={0} />
               </TabsContent>
             </Tabs>
           </div>

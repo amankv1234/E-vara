@@ -186,7 +186,6 @@ export function classifyResult(result: SearchResultInput, fullName: string, user
       similarityScore: Math.round(usernameFromUrlScore * 100),
     };
   } else if (
-    hasFullName ||
     hasUsernameMention ||
     (platform && usernameFromUrlScore >= 0.6)
   ) {

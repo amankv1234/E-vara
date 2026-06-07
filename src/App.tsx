@@ -8,16 +8,18 @@ import CyberDashboardLoader from "@/components/CyberDashboardLoader";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
+import PricingPage from "./pages/Pricing.tsx";
+
 const queryClient = new QueryClient();
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading for 10 seconds
+    // Simulate loading for 3 seconds
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 10000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -31,6 +33,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/pricing" element={<PricingPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

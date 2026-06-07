@@ -1,12 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { User, ShieldCheck, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
+export interface IdentityData {
+  email: string;
+  username: string;
+  fullName: string;
+}
+
 interface IdentityFormProps {
-  onSave?: (data: any) => void;
-  initial?: any | null;
+  onSave?: (data: IdentityData) => void;
+  initial?: Partial<IdentityData> | null;
 }
 
 const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {

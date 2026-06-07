@@ -40,7 +40,7 @@ export const GitHubEventsCard = ({ username }: Props) => {
         <h4 className="flex items-center gap-1 text-sm font-medium text-foreground">
           <Activity className="h-4 w-4" /> GitHub Activity
         </h4>
-        <p className="text-xs text-muted-foreground">Rate limit: 60 req/h</p>
+        <p className="text-xs text-muted-foreground">Rate limit: 60 req/h</p>
       </div>
 
       {loading && <p className="text-xs text-muted-foreground">Loading…</p>}

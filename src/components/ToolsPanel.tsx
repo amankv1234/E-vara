@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { Search, ExternalLink, AlertTriangle, Lock, Loader2, ShieldAlert, CheckCircle } from "lucide-react";
+import { Search, ExternalLink, AlertTriangle, Lock, Loader2, ShieldAlert, CheckCircle, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { generateExecutiveReport } from "@/lib/report-generator";
 
 interface BreachResult {
   source: string;
@@ -206,6 +208,14 @@ const ToolsPanel = ({ identity }: ToolsPanelProps) => {
                 <p className="text-[10px] font-mono text-muted-foreground text-center">
                   Scanned at {new Date(scanResults.scannedAt).toLocaleString()}
                 </p>
+                
+                <button
+                  onClick={() => generateExecutiveReport(identity, scanResults)}
+                  className="w-full mt-2 flex items-center justify-center gap-2 rounded-md border border-primary/40 bg-primary/5 px-4 py-2.5 text-xs font-mono font-medium text-primary hover:bg-primary/10 transition-all shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]"
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  Generate Audit Dossier (PDF)
+                </button>
               </div>
             )}
           </>
