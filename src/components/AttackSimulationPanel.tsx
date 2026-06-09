@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 
 interface AttackSimulationPanelProps {
   email?: string;
@@ -14,6 +14,15 @@ const steps = [
 const AttackSimulationPanel = ({ email }: AttackSimulationPanelProps) => {
   const [active, setActive] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   const personalizedSteps = useMemo(() => {
     const base = [
@@ -43,14 +52,20 @@ const AttackSimulationPanel = ({ email }: AttackSimulationPanelProps) => {
   }, [active, stepIndex, personalizedSteps, email]);
 
   const runSimulation = () => {
+    if (intervalRef.current) {
+      window.clearInterval(intervalRef.current);
+    }
     setActive(true);
     setStepIndex(0);
     let idx = 0;
-    const id = window.setInterval(() => {
+    intervalRef.current = window.setInterval(() => {
       idx += 1;
       setStepIndex(Math.min(idx, personalizedSteps.length - 1));
       if (idx >= personalizedSteps.length - 1) {
-        window.clearInterval(id);
+        if (intervalRef.current) {
+          window.clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
       }
     }, 1200);
   };

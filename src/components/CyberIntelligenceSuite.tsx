@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Bot, ChevronDown, ChevronUp, Sparkles, Target, ShieldAlert, Wand2 } from "lucide-react";
 
 interface CyberIntelligenceSuiteProps {
@@ -83,6 +83,14 @@ export default function CyberIntelligenceSuite({ fullName, username, alertCount,
     { from: "assistant", text: "E-Vara AI online. Ask me about exposure, weak points, or mitigation." },
   ]);
 
+  const timeoutsRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach((t) => window.clearTimeout(t));
+    };
+  }, []);
+
   const score = useMemo(() => {
     const breach = 34;
     const platforms = Math.round(platformNodes.reduce((acc, p) => acc + p.risk, 0) / platformNodes.length * 0.38);
@@ -104,7 +112,7 @@ export default function CyberIntelligenceSuite({ fullName, username, alertCount,
   const askAssistant = (question: string) => {
     const lower = question.toLowerCase();
     setChatMessages((prev) => [...prev, { from: "user", text: question }, { from: "assistant", text: "Analyzing..." }]);
-    setTimeout(() => {
+    const t = window.setTimeout(() => {
       setChatMessages((prev) => {
         const next = [...prev];
         next[next.length - 1] = {
@@ -116,15 +124,21 @@ export default function CyberIntelligenceSuite({ fullName, username, alertCount,
         return next;
       });
     }, 900);
+    timeoutsRef.current.push(t);
   };
 
   const runSimulation = () => {
+    timeoutsRef.current.forEach((t) => window.clearTimeout(t));
+    timeoutsRef.current = [];
+
     setSimRunning(true);
     setSimStep(0);
     simulationSteps.forEach((_, idx) => {
-      window.setTimeout(() => setSimStep(idx + 1), idx * 800);
+      const t = window.setTimeout(() => setSimStep(idx + 1), idx * 800);
+      timeoutsRef.current.push(t);
     });
-    window.setTimeout(() => setSimRunning(false), simulationSteps.length * 850);
+    const endT = window.setTimeout(() => setSimRunning(false), simulationSteps.length * 850);
+    timeoutsRef.current.push(endT);
   };
 
   return (

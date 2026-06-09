@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import {
   AlertTriangle,
   Bot,
@@ -158,6 +158,15 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
   ]);
   const [typing, setTyping] = useState(false);
 
+  const timeoutsRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    return () => {
+      // Clean up all active timeouts on unmount
+      timeoutsRef.current.forEach((t) => window.clearTimeout(t));
+    };
+  }, []);
+
   const riskScore = useMemo(() => {
     const base = 35;
     const alertFactor = Math.min(alertCount * 3, 30);
@@ -168,22 +177,28 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
   const threatLabel = riskScore >= 75 ? "DEFCON 2" : riskScore >= 55 ? "DEFCON 3" : "DEFCON 4";
 
   const runSimulation = () => {
+    timeoutsRef.current.forEach((t) => window.clearTimeout(t));
+    timeoutsRef.current = [];
+
     setSimulating(true);
     setSimulationStep(0);
     ATTACK_STEPS.forEach((_, idx) => {
-      setTimeout(() => setSimulationStep(idx + 1), idx * 900 + 350);
+      const t = window.setTimeout(() => setSimulationStep(idx + 1), idx * 900 + 350);
+      timeoutsRef.current.push(t);
     });
-    setTimeout(() => setSimulating(false), ATTACK_STEPS.length * 900 + 500);
+    const endT = window.setTimeout(() => setSimulating(false), ATTACK_STEPS.length * 900 + 500);
+    timeoutsRef.current.push(endT);
   };
 
   const askQuestion = (type: "exposure" | "reduce") => {
     const question = type === "exposure" ? "Where am I most exposed?" : "How can I reduce my risk?";
     setChatMessages((prev) => [...prev, { role: "user", text: question }]);
     setTyping(true);
-    setTimeout(() => {
+    const t = window.setTimeout(() => {
       setTyping(false);
       setChatMessages((prev) => [...prev, { role: "assistant", text: CHAT_RESPONSES[type] }]);
     }, 950);
+    timeoutsRef.current.push(t);
   };
 
   return (

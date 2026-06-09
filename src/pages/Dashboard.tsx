@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Shield, LogOut, History, LayoutDashboard, Database, Activity, CreditCard } from "lucide-react";
 import { useAuth, IdentityInfo } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
@@ -26,7 +26,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
 
   const nodeId = profile?.node_id_stable || "INITIALIZING...";
 
-  useMemo(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setBooting(false), 2500);
     return () => clearTimeout(timer);
   }, []);
@@ -74,7 +74,7 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
             
             <div className="hidden lg:flex flex-col items-end mr-4 border-l border-border/40 pl-4">
               <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Kernel v2.5.0-HARDENED</span>
-              <span className="text-[9px] font-mono text-primary/50 uppercase">ID: {nodeId.substring(0, 15)}...</span>
+              <span className="text-[9px] font-mono text-primary/50 uppercase">ID: {(nodeId || "").substring(0, 15)}...</span>
             </div>
             
             <div className="flex gap-2">

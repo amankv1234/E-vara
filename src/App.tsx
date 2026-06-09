@@ -23,10 +23,28 @@ const BillingPage = lazy(() => import("./pages/Billing.tsx"));
 const SupportPage = lazy(() => import("./pages/Support.tsx"));
 const LegalProtocol = lazy(() => import("./pages/LegalProtocol.tsx"));
 
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { QueryCache, MutationCache } from "@tanstack/react-query";
+import { toast } from "sonner";
+
 const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      console.warn(`[Self-Healing Query Failover] ${query.queryKey.join(":")}:`, error);
+    },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error) => {
+      console.warn(`[Self-Healing Mutation Failover]:`, error);
+      toast.error("Security System Action Failed", {
+        description: error.message || "Operation failed to complete online.",
+      });
+    },
+  }),
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 10000),
       refetchOnWindowFocus: false,
     },
   },
@@ -131,13 +149,15 @@ const AppRouter = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AppRouter />
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AppRouter />
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

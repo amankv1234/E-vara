@@ -52,6 +52,7 @@ const SEVERITY_BADGE: Record<AlertSeverity, string> = {
 const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonitoringChange }: MonitoringFeedProps) => {
   const [monitoring, setMonitoring] = useState(false);
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
+  const timeoutsRef = useRef<number[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const counterRef = useRef(0);
 
@@ -76,9 +77,10 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
       return updated;
     });
 
-    setTimeout(() => {
+    const t = window.setTimeout(() => {
       setAlerts((prev) => prev.map((a) => (a.id === alert.id ? { ...a, isNew: false } : a)));
     }, 3000);
+    timeoutsRef.current.push(t);
   }, [fullName, queries, onAlertsChange]);
 
   const toggleMonitoring = () => {
@@ -95,11 +97,6 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
       generateAlert();
       intervalRef.current = setInterval(generateAlert, 7000);
     }
-
-    setMonitoring(true);
-    onMonitoringChange?.(true, new Date());
-    generateAlert();
-    intervalRef.current = setInterval(generateAlert, 8000);
   };
 
   useEffect(() => {
@@ -107,6 +104,7 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      timeoutsRef.current.forEach((t) => window.clearTimeout(t));
     };
   }, []);
 
