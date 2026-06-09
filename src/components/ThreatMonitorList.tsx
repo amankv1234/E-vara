@@ -4,7 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ShieldCheck, Loader2, AlertTriangle } from 'lucide-react';
 
 export const ThreatMonitorList = () => {
-  const { findings, loading, isOffline } = useThreatMonitor();
+  const { data: findings = [], isLoading: loading, error } = useThreatMonitor();
+  const isOffline = !!error;
 
   if (loading) {
     return (
