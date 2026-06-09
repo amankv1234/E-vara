@@ -38,11 +38,24 @@ export const IdentityIntelligenceCard = ({ signal }: IdentityIntelligenceCardPro
   return (
     <article className={`rounded-lg border-2 p-4 ${RISK_COLORS[signal.risk]}`}>
       <div className="mb-2 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">🔍 Type</p>
-          <h4 className="truncate text-sm font-semibold text-foreground">
-            {getRiskEmoji(signal.risk)} {signal.type}
-          </h4>
+        <div className="min-w-0 flex items-center gap-3">
+          {signal.imageUrl && (
+            <img 
+              src={signal.imageUrl} 
+              alt={`${signal.platform} avatar`}
+              className="h-10 w-10 rounded-full border border-border object-cover bg-secondary"
+              onError={(e) => {
+                // Hide if it fails to load
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          )}
+          <div>
+            <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">🔍 Type</p>
+            <h4 className="truncate text-sm font-semibold text-foreground">
+              {getRiskEmoji(signal.risk)} {signal.type}
+            </h4>
+          </div>
         </div>
 
         <div className="shrink-0 text-right">

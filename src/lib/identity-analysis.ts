@@ -21,6 +21,7 @@ export interface IdentitySignal {
   title: string;
   snippet: string;
   link: string;
+  imageUrl?: string;
   metadata?: {
     exactMatch?: boolean;
     partialMatch?: boolean;
@@ -220,6 +221,14 @@ export function classifyResult(result: SearchResultInput, fullName: string, user
   else if (confidence >= 50) risk = "Medium Risk";
   else if (confidence >= 20) risk = "Low Risk";
 
+  const cleanHandle = username.split('@')[0];
+  let imageUrl: string | undefined = undefined;
+  
+  if (platform === "Twitter") imageUrl = `https://unavatar.io/twitter/${cleanHandle}`;
+  else if (platform === "GitHub") imageUrl = `https://unavatar.io/github/${cleanHandle}`;
+  else if (platform === "Reddit") imageUrl = `https://unavatar.io/reddit/${cleanHandle}`;
+  else if (platform) imageUrl = `https://unavatar.io/${cleanHandle}`;
+
   return {
     type,
     platform,
@@ -229,6 +238,7 @@ export function classifyResult(result: SearchResultInput, fullName: string, user
     title: result.title,
     snippet: result.snippet,
     link: result.link,
+    imageUrl,
     metadata,
   };
 }
