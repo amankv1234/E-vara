@@ -9,6 +9,13 @@ const BookDemo = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    organization: '',
+    timeframe: 'As soon as possible'
+  });
+
   useSEO({
     title: "Schedule a Demo",
     description: "Establish your defense perimeter. Schedule a technical demonstration of the E-VARA Identity Defense Engine.",
@@ -18,10 +25,42 @@ const BookDemo = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API call
-    await new Promise(r => setTimeout(r, 2000));
-    setLoading(false);
-    setSubmitted(true);
+
+    const accessKey = import.meta.env.VITE_WEB3FORMS_KEY;
+
+    if (!accessKey) {
+      console.warn("No Web3Forms key found. Simulating submission.");
+      await new Promise(r => setTimeout(r, 2000));
+      setLoading(false);
+      setSubmitted(true);
+      return;
+    }
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: `New Agency Demo Request from ${formData.organization}`,
+          from_name: "E-VARA Intelligence Radar",
+          ...formData
+        }),
+      });
+
+      if (response.status === 200) {
+        setSubmitted(true);
+      } else {
+        alert("Transmission failed. Please try again or contact support directly.");
+      }
+    } catch (error) {
+      alert("Network protocol error. Check your connection.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -109,6 +148,9 @@ const BookDemo = () => {
                     <div className="relative">
                       <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/40" />
                       <input 
+                        name="name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
                         required
                         className="w-full pl-10 rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                         placeholder="John Wick"
@@ -121,6 +163,9 @@ const BookDemo = () => {
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/40" />
                       <input 
                         type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
                         required
                         className="w-full pl-10 rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                         placeholder="target@company.com"
@@ -134,6 +179,9 @@ const BookDemo = () => {
                   <div className="relative">
                     <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/40" />
                     <input 
+                      name="organization"
+                      value={formData.organization}
+                      onChange={(e) => setFormData({...formData, organization: e.target.value})}
                       required
                       className="w-full pl-10 rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                       placeholder="Continental Corp"
@@ -145,7 +193,11 @@ const BookDemo = () => {
                   <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Preferred Timeframe</label>
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/40" />
-                    <select className="w-full pl-10 appearance-none rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all">
+                    <select 
+                      name="timeframe"
+                      value={formData.timeframe}
+                      onChange={(e) => setFormData({...formData, timeframe: e.target.value})}
+                      className="w-full pl-10 appearance-none rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all">
                       <option>As soon as possible</option>
                       <option>Next 24 hours</option>
                       <option>This week</option>
