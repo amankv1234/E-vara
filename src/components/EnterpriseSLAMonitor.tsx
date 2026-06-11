@@ -5,7 +5,7 @@ const EnterpriseSLAMonitor = () => {
   const systems = [
     { name: 'Identity Engine', status: 'Operational', latency: '12ms', uptime: '99.99%' },
     { name: 'Breach Correlation', status: 'Operational', latency: '45ms', uptime: '99.95%' },
-    { name: 'Dark Web Scraper', status: 'Degraded', latency: '240ms', uptime: '98.5%' },
+    { name: 'Exposure Intelligence', status: 'Degraded', latency: '240ms', uptime: '98.5%' },
     { name: 'Global API Gateway', status: 'Operational', latency: '8ms', uptime: '99.999%' },
   ];
 

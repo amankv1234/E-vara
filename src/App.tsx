@@ -24,6 +24,9 @@ const SupportPage = lazy(() => import("./pages/Support.tsx"));
 const LegalProtocol = lazy(() => import("./pages/LegalProtocol.tsx"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
 const CookieNotice = lazy(() => import("./pages/CookieNotice.tsx"));
+const DemoHealth = lazy(() => import("./pages/DemoHealth.tsx"));
+const Contribution = lazy(() => import("./pages/Contribution.tsx"));
+const TrustCenter = lazy(() => import("./pages/TrustCenter.tsx"));
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import FeedbackWidget from "@/components/FeedbackWidget";
@@ -103,6 +106,10 @@ const AppRouter = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/solutions" element={<SolutionsPage />} />
+          <Route path="/billing" element={<BillingPage />} />
+          <Route path="/support" element={<SupportPage />} />
+          <Route path="/contribution" element={<Contribution />} />
+          <Route path="/demo-health" element={<DemoHealth />} />
           <Route path="/threat-detection" element={<ThreatDetectionPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/docs" element={<DocsPage />} />
@@ -110,6 +117,7 @@ const AppRouter = () => {
           <Route path="/legal" element={<LegalProtocol />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/cookies" element={<CookieNotice />} />
+          <Route path="/trust-center" element={<TrustCenter />} />
           <Route path="/" element={<Index />} />
           <Route path="/labs" element={<Labs />} />
           

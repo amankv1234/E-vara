@@ -42,8 +42,8 @@ Every generated report must include the following five high-fidelity sections:
 ---
 
 ### 4. PERFORMANCE & INTEGRITY
-*   **No Memory Leaks**: Uses a strict state-buffer limit (25 nodes) to ensure the report generation does not crash the executive's browser.
-*   **Zero-Knowledge**: The report data is derived from encrypted hashes, ensuring the SaaS owner never handles the client's plaintext PII.
+*   **No Memory Leaks**: Uses a strict state-buffer limit (25 nodes) to ensure the report generation remains performant in the executive's browser.
+*   **Privacy-Preserving Ingestion**: The report data is derived from encrypted hashes. By minimizing storage of raw identifiers, the platform reduces the SaaS owner's liability regarding plaintext PII.
 *   **Industrial Types**: 100% Type-Safe interfaces (ReportIdentity, ReportScanResults) ensuring the engine is maintainable and scalable.
 
 ---

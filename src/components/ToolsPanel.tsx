@@ -142,11 +142,11 @@ const ToolsPanel = ({ identity }: ToolsPanelProps) => {
         </a>
       </div>
 
-      {/* Dark Web Breach Scan */}
+      {/* Exposure Intelligence Scan */}
       <div className="rounded-lg border border-border bg-card p-6">
         <div className="mb-4 flex items-center gap-2">
           <Lock className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-mono font-semibold text-foreground uppercase tracking-wider">Dark Web Scan</h3>
+          <h3 className="text-sm font-mono font-semibold text-foreground uppercase tracking-wider">Exposure Intelligence</h3>
         </div>
         <p className="mb-4 text-xs text-muted-foreground font-body">
           Scan multiple breach databases for exposed data.

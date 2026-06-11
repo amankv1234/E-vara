@@ -48,7 +48,6 @@ const LandingPage = () => {
   });
 
   useEffect(() => {
-    console.log("E-VARA V2 REDESIGN LOADED");
     gsap.utils.toArray<HTMLElement>("section").forEach((section) => {
       gsap.fromTo(section, 
         { opacity: 0, y: 50 },

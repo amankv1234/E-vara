@@ -221,9 +221,28 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
           <CircleMetric label="Platform Exposure" value={67} tone="medium" />
           <CircleMetric label="Anomaly Index" value={58} tone="medium" />
           <div className="glass-panel interactive-panel flex flex-col justify-center p-3">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">E-Vara Risk Score</p>
+            <div className="flex justify-between items-center mb-1">
+              <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">Identity Risk Snapshot</p>
+              <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border bg-black/40 text-cyan-400 border-cyan-400/50">LIVE</span>
+            </div>
             <p className="text-3xl font-bold text-[hsl(var(--severity-high))]">{riskScore}/100</p>
-            <p className="text-xs text-muted-foreground">Primary vulnerability: reused email and profile correlation.</p>
+            
+            <div className="mt-4 p-2 rounded bg-black/20 border border-white/5">
+              <p className="text-[10px] text-muted-foreground uppercase font-mono mb-1.5">Changed since last snapshot:</p>
+              <div className="flex flex-col gap-1 text-[11px] font-mono">
+                <span className="text-emerald-400">−10 New verified device</span>
+                <span className="text-rose-400">+15 Reused email exposed</span>
+                <span className="text-emerald-400">−5 MFA confirmed active</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 mt-3 text-[9px] font-mono uppercase text-muted-foreground">
+              <div className="flex flex-col gap-1">
+                <span>Confidence: 91%</span>
+                <span>Evidence: High</span>
+              </div>
+              <span>Updated: 3m ago</span>
+            </div>
           </div>
         </div>
 

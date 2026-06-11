@@ -34,7 +34,7 @@ const PricingPage = () => {
           </div>
           <h1 className="text-5xl md:text-6xl font-black tracking-tighter uppercase mb-6 italic">Executive Threat Intelligence</h1>
           <p className="text-muted-foreground font-body text-lg">
-            We do not sell software. We sell absolute digital awareness. Fully managed dark web, OSINT, and synthetic media monitoring for high-value targets.
+            We do not sell software. We sell absolute digital awareness. Fully managed exposure, OSINT, and synthetic media monitoring for high-value targets.
           </p>
         </div>
 
@@ -53,7 +53,7 @@ const PricingPage = () => {
 
             <div className="space-y-4 mb-10 flex-grow">
               {[
-                "Comprehensive Dark Web Search",
+                "Comprehensive Exposure Analysis",
                 "Deepfake & Synthetic Media Footprint",
                 "Public Database Leaks (PII)",
                 "Detailed 15-Page PDF Dossier",
@@ -131,7 +131,7 @@ const PricingPage = () => {
                 <Shield className="h-6 w-6 text-[#007AFF]" />
               </div>
               <div>
-                <p className="text-sm font-bold uppercase tracking-widest text-white">100% Confidential</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-white">Strictly Confidential</p>
                 <p className="text-xs text-white/50 mt-1 font-body">All reports are securely deleted post-delivery unless retained under the Crisis Radar contract.</p>
               </div>
             </div>

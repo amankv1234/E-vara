@@ -5,7 +5,7 @@ const FeatureGrid = () => (
     <div className="container mx-auto px-6">
       <div className="text-center max-w-3xl mx-auto mb-20">
         <h2 className="text-4xl font-black tracking-tighter uppercase mb-6">Omni-Layer Defense</h2>
-        <p className="text-muted-foreground">Every entry point protected. Every packet analyzed. Every identity secured.</p>
+        <p className="text-muted-foreground">Every entry point monitored. Every packet analyzed. Every identity verified.</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">

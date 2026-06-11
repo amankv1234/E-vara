@@ -16,7 +16,7 @@ const threatMeta = {
 } as const;
 
 const pieData = [
-  { name: "Safe", value: 46, color: "#00e5ff" },
+  { name: "No Exposure", value: 46, color: "#00e5ff" },
   { name: "Vulnerable", value: 31, color: "#f59e0b" },
   { name: "High Risk", value: 23, color: "#fb7185" },
 ];
@@ -81,7 +81,7 @@ export default function FuturisticThreatConsole({ alertCount }: { alertCount: nu
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Threat Level" value={threatLevel} />
-            <StatCard label="Risk Score" value={`${riskScore}%`} />
+            <StatCard label="Identity Risk Snapshot" value={`${riskScore}%`} />
             <StatCard label="Account Compromise" value={`${Math.min(95, riskScore - 4)}%`} />
             <StatCard label="Data Exposure" value={`${Math.max(20, riskScore - 18)}%`} />
           </div>

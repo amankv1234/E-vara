@@ -59,14 +59,14 @@ serve(async (req) => {
       const untrustedCount = devices.filter(d => !d.is_trusted).length;
       if (untrustedCount > 0) {
         score -= (untrustedCount * 10);
-        factors.push({ impact: -(untrustedCount * 10), description: `${untrustedCount} Untrusted Devices`, type: 'negative' });
+        factors.push({ impact: -(untrustedCount * 10), description: `${untrustedCount} Unverified Devices`, type: 'negative' });
         confidence -= 10;
       }
       
       const trustedCount = devices.length - untrustedCount;
       if (trustedCount > 0) {
         score += 5;
-        factors.push({ impact: +5, description: `${trustedCount} Trusted Devices`, type: 'positive' });
+        factors.push({ impact: +5, description: `${trustedCount} Verified Devices`, type: 'positive' });
       }
     }
 

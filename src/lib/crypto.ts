@@ -1,3 +1,5 @@
+import { log } from "@/lib/observability";
+
 export const encryptCache = async (data: unknown, key: string): Promise<string> => {
   const encoder = new TextEncoder();
   const dataString = JSON.stringify(data);
@@ -29,7 +31,7 @@ export const decryptCache = async (encryptedBase64: string, key: string): Promis
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, cryptoKey, data);
     return JSON.parse(new TextDecoder().decode(decrypted));
   } catch (e) {
-    console.error('Cache decryption failed', e);
+    log('error', 'Cache decryption failed', { error: e });
     return null;
   }
 };

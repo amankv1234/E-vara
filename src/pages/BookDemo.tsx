@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/observability";
 
 const BookDemo = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -37,13 +38,13 @@ const BookDemo = () => {
       });
 
       if (error) {
-        console.error("Supabase Error:", error);
+        log('error', "Supabase Error in BookDemo", { error });
         alert(`Transmission failed: ${error.message}`);
       } else {
         setSubmitted(true);
       }
     } catch (error) {
-      console.error(error);
+      log('error', "Network protocol error in BookDemo", { error });
       alert("Network protocol error. Check your connection.");
     } finally {
       setLoading(false);

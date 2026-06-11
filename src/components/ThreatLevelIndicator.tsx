@@ -21,8 +21,18 @@ const ThreatLevelIndicator = ({ score }: ThreatLevelIndicatorProps) => {
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">Global Threat Level</p>
           <h2 className="text-sm font-mono font-semibold text-foreground sm:text-base">{current.name} • Active Monitoring Grid</h2>
         </div>
-        <div className={`rounded-full border border-border px-3 py-1 text-xs font-mono ${current.glow}`} style={{ color: current.color }}>
-          Risk Score {score}/100
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex gap-2 items-center">
+            <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border bg-black/40 text-cyan-400 border-cyan-400/50">REFRESHING</span>
+            <div className={`rounded-full border border-border px-3 py-1 text-xs font-mono ${current.glow}`} style={{ color: current.color }}>
+              Risk Snapshot {score}/100
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-[9px] font-mono uppercase text-muted-foreground mt-1">
+            <span>Confidence: 96%</span>
+            <span>Evidence: High</span>
+            <span>Updated: 12s ago</span>
+          </div>
         </div>
       </div>
 

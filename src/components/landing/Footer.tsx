@@ -30,6 +30,7 @@ const Footer = () => (
           <h4 className="font-bold uppercase tracking-widest text-xs mb-6">Legal Protocol</h4>
           <ul className="space-y-4 text-sm text-muted-foreground font-mono uppercase tracking-tighter">
             <li><Link to="/legal#data-privacy" className="hover:text-primary transition-colors">Data Privacy</Link></li>
+            <li><Link to="/trust-center" className="hover:text-primary transition-colors">Trust Center</Link></li>
             <li><Link to="/legal#terms" className="hover:text-primary transition-colors">Terms of Use</Link></li>
             <li><Link to="/legal#ethics" className="hover:text-primary transition-colors">Security Ethics</Link></li>
             <li><Link to="/legal" className="hover:text-primary transition-colors">Compliance</Link></li>

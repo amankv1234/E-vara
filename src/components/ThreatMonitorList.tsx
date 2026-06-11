@@ -28,7 +28,7 @@ export const ThreatMonitorList = () => {
             <ShieldCheck className="h-12 w-12 text-green-500/50 mb-4" />
             <CardTitle className="text-xl mb-2">Clean Bill of Health</CardTitle>
             <p className="text-muted-foreground max-w-xs">
-              No active threats or data breaches have been detected for your monitored identities.
+              No exposures detected in this analysis window.
             </p>
           </CardContent>
         </Card>

@@ -60,7 +60,7 @@ const PrivacyPolicy = () => {
 
             <div className="space-y-4">
               <h2 className="text-lg font-black text-foreground uppercase tracking-tight">3. Data Protection</h2>
-              <p>All data is protected by:</p>
+              <p>Data integrity is maintained by:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Client-side SHA-256 hashing before transmission.</li>
                 <li>TLS 1.3 encryption in transit.</li>

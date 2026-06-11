@@ -1,18 +1,18 @@
-# E-VARA: Autonomous Identity Intelligence & Defense OS
+# E-VARA: Executive Identity Intelligence Platform
 
 [![Project Status: Active](https://img.shields.io/badge/Project%20Status-Active-brightgreen.svg)]()
 [![Security: Enterprise Grade](https://img.shields.io/badge/Security-Enterprise%20Grade-blue.svg)]()
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)]()
 
-E-VARA is a state-of-the-art, military-grade Cyber Intelligence platform engineered for real-time identity monitoring, threat surface analysis, and executive digital protection. Built for high-net-worth individuals, government officials, and enterprise executives, E-VARA provides unprecedented operational awareness of digital exposure.
+E-VARA is a privacy-first identity intelligence platform engineered for real-time identity monitoring, threat surface analysis, and executive digital protection. Built for executives, founders, operators, and public-facing teams, E-VARA helps users understand what changed, what matters, and what action to take next.
 
-## 💎 Value Proposition: The $100k+ Asset
-E-VARA is not just a tool; it's a complete SaaS-ready ecosystem architected for immediate enterprise deployment or acquisition.
-- **Strategic Intelligence**: Moves beyond simple breach detection to cross-platform identity correlation.
-- **Autonomous Defense**: Automated monitoring and real-time threat surface mapping.
+## 💎 Value Proposition: The Executive Defense Layer
+E-VARA combines exposure monitoring, trust scoring, explainable risk analysis, and executive reporting into a single operating layer. The goal isn’t surveillance. The goal is helping users understand trust instead of collecting everything.
+- **Exposure Intelligence**: Privacy-preserving ingestion that monitors exposure signals while minimizing storage of raw identifiers.
+- **Explainable Risk**: Automated monitoring that surfaces risk and translates technical findings into understandable security decisions.
 - **Executive Reporting**: Institutional-grade PDF dossiers ready for C-suite review.
-- **Architectural Excellence**: Built with a modern, scalable stack (React, TypeScript, Supabase, Tailwind CSS).
-- **Compliance Ready**: Designed with PII protection and SHA-256 client-side hashing protocols.
+- **Architectural Excellence**: Built with a production-oriented architecture and a modern, scalable stack (React, TypeScript, Supabase, Tailwind CSS).
+- **Compliance Ready**: Designed with industry-standard cryptographic protections and SHA-256 client-side hashing protocols.
 
 ## 🚀 Key Features
 - **Advanced Identity Correlation Engine**: Maps identity markers across 5+ major social networks and the deep web.

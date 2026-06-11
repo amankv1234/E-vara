@@ -21,9 +21,7 @@ const ThreatScanPanel = () => {
 
     const level = riskScore >= 70 ? "HIGH" : riskScore >= 40 ? "MEDIUM" : "LOW";
     
-    // Prevent empty charts by defaulting to "Safe" if no threats
-    const total = findings.length;
-    const pieData = total === 0 ? [{ name: "Safe", value: 100, color: "#00e5ff" }] : [
+    const pieData = total === 0 ? [{ name: "No Exposure", value: 100, color: "#00e5ff" }] : [
       { name: "Vulnerable", value: Math.round((mediumRisk/total)*100), color: "#3d8bff" },
       { name: "High Risk", value: Math.round((highRisk/total)*100), color: "#ff5f3a" },
       { name: "Low Risk", value: Math.round((lowRisk/total)*100), color: "#31d3c6" },
@@ -71,7 +69,7 @@ const ThreatScanPanel = () => {
         {riskScore === 0 && (
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[hsl(var(--severity-low)/0.15)] border border-[hsl(var(--severity-low)/0.3)]">
              <ShieldCheck className="h-3.5 w-3.5 text-[hsl(var(--severity-low))]" />
-             <span className="text-[10px] uppercase font-bold text-[hsl(var(--severity-low))]">System Secure</span>
+             <span className="text-[10px] uppercase font-bold text-[hsl(var(--severity-low))]">No Known Exposure</span>
           </div>
         )}
       </div>
@@ -79,7 +77,7 @@ const ThreatScanPanel = () => {
       <div className="space-y-4">
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           <StatCard label="Overall Threat Level" value={level} />
-          <StatCard label="Calculated Risk Score" value={`${riskScore}%`} />
+          <StatCard label="Calculated Risk Snapshot" value={`${riskScore}%`} reality="LIVE" evidence="High" />
           <StatCard label="Active Findings" value={findings?.length.toString() || "0"} />
         </div>
         

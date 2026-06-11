@@ -202,7 +202,7 @@ export const SearchResultsIntelligence = ({
             {analysisResult.signals.length === 0 ? (
               <div className="rounded-md border border-[hsl(var(--severity-low)/0.3)] bg-[hsl(var(--severity-low)/0.1)] p-6 text-center">
                 <p className="text-sm text-[hsl(var(--severity-low))]">
-                  System Secure. No anomalous signals detected in surface web sweep.
+                  Low Observed Risk. No anomalous signals detected in surface web sweep.
                 </p>
               </div>
             ) : (

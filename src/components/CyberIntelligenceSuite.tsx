@@ -288,9 +288,28 @@ export default function CyberIntelligenceSuite({ fullName, username, alertCount,
       )}
 
       <div className="glass-panel rounded-xl p-4 sm:p-5 lift-3d">
-        <div className="mb-3 flex items-center gap-2">
-          <Target className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">E-Vara Risk Score: {score.total}/100</h3>
+        <div className="mb-3 flex flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Identity Risk Snapshot: {score.total}/100</h3>
+            </div>
+            <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border bg-black/40 text-amber-400 border-amber-400/50">LIMITED DATA</span>
+          </div>
+          <div className="flex items-center gap-4 text-[9px] font-mono uppercase text-muted-foreground ml-6 mt-1">
+            <div className="flex gap-4">
+              <span>Confidence: 89%</span>
+              <span>Evidence: Medium</span>
+            </div>
+            <span>Updated: 1m ago</span>
+          </div>
+          <div className="ml-6 mt-2 p-2 rounded bg-black/20 border border-white/5 w-fit">
+            <p className="text-[10px] text-muted-foreground uppercase font-mono mb-1">Changed since last snapshot:</p>
+            <div className="flex flex-col gap-1 text-[11px] font-mono">
+              <span className="text-rose-400">+12 Deepfake audio marker match</span>
+              <span className="text-emerald-400">−8 PII takedown verified</span>
+            </div>
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {[{title:"Breach data",value:score.breach,icon:ShieldAlert},{title:"Platform exposure",value:score.platforms,icon:Wand2},{title:"Activity anomalies",value:score.anomalies,icon:Bot}].map((item)=> (

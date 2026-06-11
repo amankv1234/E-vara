@@ -3,7 +3,7 @@
 E-VARA is engineered for high availability, security, and scalability. This document outlines the system architecture and technical decisions that underpin the platform.
 
 ## 1. Core Philosophy
-The platform operates on a "Privacy-First Intelligence" model. All sensitive identifiers are hashed client-side before being processed by the intelligence engine, ensuring PII compliance while maintaining powerful correlation capabilities.
+The platform operates on a "Privacy-First Intelligence" model. Using privacy-preserving ingestion, all sensitive identifiers are hashed client-side before being processed by the intelligence engine. This limits raw data collection while maintaining powerful correlation capabilities.
 
 ## 2. Technology Stack
 - **Frontend Core**: React 18 with TypeScript for type-safe UI development.
@@ -26,8 +26,8 @@ The platform operates on a "Privacy-First Intelligence" model. All sensitive ide
 - **Auditing**: Automated generation of PDF dossiers using `jsPDF` for executive reporting.
 
 ## 4. Scalability
-- **Serverless Compute**: Deno-based Edge Functions scale automatically with demand.
-- **Database Indexing**: Optimized PostgreSQL indexes on identity hashes for sub-second lookup times.
+- **Serverless Compute**: Deno-based Edge Functions scale with demand, offering predictable infrastructure scaling.
+- **Database Indexing**: Optimized PostgreSQL indexes on identity hashes for fast lookup times.
 - **Asset Delivery**: Static assets served via global CDN for low latency.
 
 ## 5. Deployment Strategy

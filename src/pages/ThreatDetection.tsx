@@ -19,7 +19,7 @@ const ThreatDetectionPage = () => {
     {
       icon: <SearchCode className="h-5 w-5 text-primary" />,
       title: "Darknet Market Indexing",
-      desc: "We safely monitor underground forums and illicit marketplaces for mentions of your executive identifiers."
+      desc: "We autonomously monitor underground forums and illicit marketplaces for mentions of your executive identifiers."
     },
     {
       icon: <Fingerprint className="h-5 w-5 text-primary" />,

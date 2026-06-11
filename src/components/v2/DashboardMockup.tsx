@@ -40,7 +40,7 @@ const DashboardMockup = () => {
           <div className="lg:col-span-4 space-y-6">
             <div className="p-6 rounded-2xl border border-white/5 bg-white/[0.03] space-y-4">
               <div className="flex justify-between items-start">
-                <span className="text-[10px] font-mono text-white/60 uppercase">Threat Score</span>
+                <span className="text-[10px] font-mono text-white/60 uppercase">Risk Snapshot</span>
                 <Activity className="w-4 h-4 text-electric-blue" />
               </div>
               <div className="flex items-baseline gap-2">
