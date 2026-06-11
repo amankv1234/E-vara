@@ -244,7 +244,7 @@ export default function CyberIntelligenceSuite({ fullName, username, alertCount,
         <div className="glass-panel rounded-xl p-4 sm:p-5 lift-3d">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Attack simulation mode</h3>
-            <button onClick={runSimulation} className="neon-button rounded-md border border-primary/35 px-3 py-1 text-xs font-mono text-primary hover:text-foreground">Simulate Attack</button>
+            <button disabled={simulating} onClick={runSimulation} className="neon-button rounded-md border border-primary/35 px-3 py-1 text-xs font-mono text-primary hover:text-foreground disabled:opacity-50">Simulate Attack</button>
           </div>
           <div className="space-y-2">
             {simulationSteps.map((step, index) => {

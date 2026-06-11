@@ -315,7 +315,7 @@ const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActi
               <Zap className="h-4 w-4 text-primary" />
               <h4 className="text-sm font-semibold uppercase tracking-wider">Attack Simulation Mode</h4>
             </div>
-            <button onClick={runSimulation} className="neon-button rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+            <button disabled={simulating} onClick={runSimulation} className="neon-button rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50">
               Simulate Attack
             </button>
           </div>

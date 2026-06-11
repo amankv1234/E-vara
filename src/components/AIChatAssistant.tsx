@@ -55,7 +55,7 @@ export const AIChatAssistant = () => {
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {PRESETS.map((preset) => (
-              <button key={preset} onClick={() => ask(preset)} className="rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:border-primary/40 hover:text-foreground">
+              <button disabled={typing} key={preset} onClick={() => ask(preset)} className="rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:border-primary/40 hover:text-foreground disabled:opacity-50">
                 {preset}
               </button>
             ))}

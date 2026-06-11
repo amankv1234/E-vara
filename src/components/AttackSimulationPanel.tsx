@@ -74,7 +74,7 @@ const AttackSimulationPanel = ({ email }: AttackSimulationPanelProps) => {
     <section className="neon-panel rounded-xl border border-primary/20 p-4 sm:p-5">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="text-sm font-mono font-semibold uppercase tracking-wider text-foreground">Identity Traversal Simulation</h3>
-        <button onClick={runSimulation} className="bg-primary/20 hover:bg-primary/30 border border-primary/40 text-primary text-[10px] font-bold uppercase py-1.5 px-4 rounded-md transition-all">
+        <button disabled={active} onClick={runSimulation} className="bg-primary/20 hover:bg-primary/30 border border-primary/40 text-primary text-[10px] font-bold uppercase py-1.5 px-4 rounded-md transition-all disabled:opacity-50">
           Run Simulation
         </button>
       </div>
