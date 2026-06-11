@@ -36,7 +36,7 @@ CREATE OR REPLACE FUNCTION check_rate_limit(p_user_id UUID, p_endpoint TEXT, p_m
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS \$\$
+AS $$
 DECLARE
     v_window_start TIMESTAMP WITH TIME ZONE;
     v_current_count INT;
@@ -56,7 +56,7 @@ BEGIN
 
     RETURN TRUE;
 END;
-\$\$;
+$$;
 
 -- 3. TEAM WORKSPACES (P1)
 CREATE TABLE public.workspaces (
