@@ -1,7 +1,7 @@
 -- Week 2: Auth Trigger for Device Trust Logging
 
 CREATE OR REPLACE FUNCTION public.log_identity_event()
-RETURNS trigger AS $
+RETURNS trigger AS $$
 BEGIN
   -- Insert into identity events on login or user creation
   IF TG_OP = 'INSERT' THEN
@@ -10,7 +10,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Note: We only attach this to auth.users for demo purposes. 
 -- In a real scenario, you'd track Supabase auth.audit_log_entries or similar.
