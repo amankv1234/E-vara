@@ -27,6 +27,13 @@ const CookieNotice = lazy(() => import("./pages/CookieNotice.tsx"));
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import FeedbackWidget from "@/components/FeedbackWidget";
+import Index from "./pages/Index";
+import AppDemo from "./pages/AppDemo";
+import CyberIntelligenceSuite from "./pages/CyberIntelligenceSuite";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import FaceScanMock from "./components/FaceScan";
+import Labs from "./pages/Labs";
 import { usePageView, useScrollDepth, useSessionDuration, useClickTracking } from "@/hooks/useAnalytics";
 import { QueryCache, MutationCache } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -108,6 +115,13 @@ const AppRouter = () => {
           <Route path="/legal" element={<LegalProtocol />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/cookies" element={<CookieNotice />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/demo" element={<AppDemo />} />
+          <Route path="/app" element={<CyberIntelligenceSuite />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/scan" element={<FaceScanMock />} />
+          <Route path="/labs" element={<Labs />} />
           
           {/* Protected Routes */}
           <Route 
@@ -165,15 +179,19 @@ const AppRouter = () => {
   );
 };
 
+import { SimulationProvider } from "@/providers/SimulationProvider";
+
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AppRouter />
-        <FeedbackWidget />
-      </TooltipProvider>
+      <SimulationProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AppRouter />
+          <FeedbackWidget />
+        </TooltipProvider>
+      </SimulationProvider>
     </QueryClientProvider>
   </ErrorBoundary>
 );

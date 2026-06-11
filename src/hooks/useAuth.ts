@@ -4,12 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { sha256 } from "@/lib/crypto";
 import { runResilient } from "@/lib/resilient-fetch";
-
-// Fallback user for demo if Supabase is down
-const DEMO_USER = {
-  id: "demo-user-123",
-  email: "demo@e-vara.com",
-};
+import { useSimulation } from "@/providers/SimulationProvider";
 
 const DEMO_PROFILE: UserProfile = {
   tier: "omni",
@@ -37,6 +32,7 @@ export interface UserProfile {
 
 export function useAuth() {
   const queryClient = useQueryClient();
+  const { isSimulationMode, enableSimulation, disableSimulation } = useSimulation();
 
   // 1. Unified Session Query
   const { data: user, isLoading: loading } = useQuery({
@@ -51,10 +47,10 @@ export function useAuth() {
 
   // 2. Secure Profile & Tier Query (Source of Truth for Authorization)
   const { data: profile, error: profileError } = useQuery<UserProfile | null>({
-    queryKey: ["user-profile", user?.id],
+    queryKey: ["user-profile", user?.id, isSimulationMode],
     queryFn: async () => {
       if (!user) return null;
-      if (user.id === DEMO_USER.id) return DEMO_PROFILE;
+      if (isSimulationMode) return DEMO_PROFILE;
 
       return runResilient(
         async () => {
@@ -76,12 +72,12 @@ export function useAuth() {
 
   // 3. Identity Query (Fetch PII from Database)
   const { data: identity, isLoading: loadingIdentity } = useQuery<IdentityInfo | null>({
-    queryKey: ["identity", user?.id],
+    queryKey: ["identity", user?.id, isSimulationMode],
     queryFn: async () => {
       if (!user) return null;
       
       let defaultFullName = "Admin User";
-      let defaultEmail = DEMO_USER.email;
+      let defaultEmail = "demo@e-vara.com";
 
       const cachedDemo = localStorage.getItem('e_vara_demo_identity');
       if (cachedDemo) {
@@ -101,7 +97,7 @@ export function useAuth() {
         faceImage: null
       };
 
-      if (user.id === DEMO_USER.id) {
+      if (isSimulationMode) {
         return mockIdentity;
       }
 
@@ -138,11 +134,11 @@ export function useAuth() {
   const logout = useCallback(async () => {
     localStorage.removeItem('e_vara_demo_auth');
     localStorage.removeItem('e_vara_demo_identity');
-    localStorage.removeItem('e_vara_simulation_mode');
+    disableSimulation();
     await supabase.auth.signOut().catch(() => {});
     queryClient.clear();
     toast.success("Session Terminated");
-  }, [queryClient]);
+  }, [queryClient, disableSimulation]);
 
   const saveIdentity = useCallback(async (info: IdentityInfo) => {
     if (!user) return;
@@ -150,7 +146,7 @@ export function useAuth() {
     // ENFORCE CRYPTOGRAPHIC INTEGRITY: Hash before ingestion
     const hashedEmail = await sha256(info.email);
 
-    if (user.id === DEMO_USER.id) {
+    if (isSimulationMode) {
       localStorage.setItem('e_vara_demo_identity', JSON.stringify(info));
       localStorage.setItem(`e_vara_identity_${user.id}`, JSON.stringify(info));
       toast.success("Identity securely enrolled for scanning.");
@@ -176,7 +172,7 @@ export function useAuth() {
     }
     
     queryClient.invalidateQueries({ queryKey: ["identity", user.id] });
-  }, [user, queryClient]);
+  }, [user, queryClient, isSimulationMode]);
 
   return { 
     user, 
@@ -185,6 +181,12 @@ export function useAuth() {
     identity,
     loading: loading || loadingIdentity, 
     login: async (e: string, p: string) => {
+      // Allow triggering demo mode by specific email if in dev
+      if (e.endsWith('@demo.com') || e.endsWith('@investor.com')) {
+         enableSimulation();
+      } else {
+         disableSimulation();
+      }
       const { data, error } = await supabase.auth.signInWithPassword({ email: e, password: p });
       if (error) throw error;
       localStorage.setItem('e_vara_demo_auth', 'false');
@@ -202,3 +204,4 @@ export function useAuth() {
     saveIdentity 
   };
 }
+

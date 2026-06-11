@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { User, ShieldCheck, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { sha256 } from "@/lib/crypto";
+import { useSimulation } from "@/providers/SimulationProvider";
 
 export interface IdentityData {
   email: string;
@@ -18,6 +19,7 @@ interface IdentityFormProps {
 
 const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
   const { user, saveIdentity } = useAuth();
+  const { isSimulationMode } = useSimulation();
   const [email, setEmail] = useState(initial?.email || user?.email || "");
   const [username, setUsername] = useState(initial?.username || "");
   const [fullName, setFullName] = useState(initial?.fullName || "");
@@ -52,16 +54,23 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
       let scanError = null;
       try {
         const hashedEmail = await sha256(safeEmail);
-        const isDemoTarget = safeEmail.endsWith('@demo.com') || safeEmail.endsWith('@investor.com');
-        const res = await supabase.functions.invoke('breach-check', {
-          body: { 
-            identityHash: hashedEmail, 
-            userId: user.id,
-            isDemoTarget
-          }
-        });
-        scanResult = res.data;
-        scanError = res.error;
+        
+        // Simulation Guard
+        const simulationMode = localStorage.getItem('e_vara_simulation_mode') === 'true';
+        if (simulationMode) {
+          // Fake network delay
+          await new Promise(r => setTimeout(r, 1500));
+          scanResult = { count: 5, status: "NODE_SIMULATED" };
+        } else {
+          const res = await supabase.functions.invoke('breach-check', {
+            body: { 
+              identityHash: hashedEmail, 
+              userId: user.id
+            }
+          });
+          scanResult = res.data;
+          scanError = res.error;
+        }
       } catch (e) {
         scanError = e;
       }
