@@ -20,6 +20,7 @@ export default defineConfig(() => ({
   },
   build: {
     target: 'esnext',
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -27,7 +28,8 @@ export default defineConfig(() => ({
           ui: ["@radix-ui/react-dialog", "@radix-ui/react-slot", "lucide-react", "framer-motion", "gsap"],
           three: ["three", "@react-three/fiber", "@react-three/drei"],
           supabase: ["@supabase/supabase-js"]
-        }
+        },
+        experimentalMinChunkSize: 10_000,
       }
     }
   }
