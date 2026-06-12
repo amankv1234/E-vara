@@ -90,16 +90,24 @@ export default function DemoHealth() {
     freshnessText = "N/A";
     freshnessColor = "text-muted-foreground";
   } else if (!isSimulationMode) {
-    if (latestSnapshot) {
+    if (latestSnapshot && latestSnapshot.expires_at) {
       const expiresAt = new Date(latestSnapshot.expires_at).getTime();
-      const now = Date.now();
-      if (now > expiresAt) {
-        freshnessText = "Stale";
-        freshnessColor = "text-amber-400";
+      if (isNaN(expiresAt)) {
+        freshnessText = "Unavailable";
+        freshnessColor = "text-cyan-400";
       } else {
-        freshnessText = "Stable";
-        freshnessColor = "text-emerald-400";
+        const now = Date.now();
+        if (now > expiresAt) {
+          freshnessText = "Stale";
+          freshnessColor = "text-amber-400";
+        } else {
+          freshnessText = "Stable";
+          freshnessColor = "text-emerald-400";
+        }
       }
+    } else if (latestSnapshot) {
+      freshnessText = "Unavailable";
+      freshnessColor = "text-cyan-400";
     } else {
       freshnessText = "None";
       freshnessColor = "text-cyan-400";
