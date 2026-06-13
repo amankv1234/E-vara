@@ -11,6 +11,7 @@ export default function DemoHealth() {
   const { user } = useAuth();
   const { isSimulationMode } = useSimulation();
   const [consoleErrors, setConsoleErrors] = useState(0);
+  const [renderTime] = useState(() => Date.now());
 
   // 1. Edge Worker Queue Query
   const { data: queueCount } = useQuery({
@@ -53,9 +54,8 @@ export default function DemoHealth() {
         if (logsStr) {
           const logs = JSON.parse(logsStr);
           if (Array.isArray(logs)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const errorCount = logs.filter(
-              (l: any) => l.level === "error",
+              (l: { level?: string }) => l.level === "error",
             ).length;
             setConsoleErrors(errorCount);
             return;
@@ -99,7 +99,7 @@ export default function DemoHealth() {
         freshnessText = "Unavailable";
         freshnessColor = "text-cyan-400";
       } else {
-        const now = Date.now();
+        const now = renderTime;
         if (now > expiresAt) {
           freshnessText = "Stale";
           freshnessColor = "text-amber-400";

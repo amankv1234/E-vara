@@ -115,7 +115,7 @@ serve(async (req) => {
               const signature = 'sha256=' + Array.from(new Uint8Array(mac)).map(b => b.toString(16).padStart(2, '0')).join('');
 
               const controller = new AbortController();
-              const timeout = setTimeout(() => controller.abort(), 3000); // 3 s timeout
+              const timeout = setTimeout(() => controller.abort(), 3000); // 3 s timeout
               try {
                 await fetch(hook.url, {
                   method: 'POST',
